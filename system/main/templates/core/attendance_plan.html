@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
+    <h1 style="margin: 0; font-size: 1.5rem;">出席計画・状況</h1>
+    <!-- ナビゲーションバー -->
+    <nav>
+        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+            <li><a href="{% url 'student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホームに戻る</a></li>
+            <li><a href="{% url 'manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
+            <li><a href="{% url 'logout' %}" style="text-decoration: none; color: white; font-weight: bold;">ログアウト</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="content-container">
+    <h2>出席状況</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>科目名</th>
+                <th>授業回数</th>
+                <th>出席日数</th>
+                <th>出席率</th>
+                <th>状況</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in attendance_data %}
+                <tr class="{% if data.status == '危険' %}danger-row{% elif data.status == '注意' %}warning-row{% endif %}">
+                    <td>{{ data.subject_name }}</td>
+                    <td>{{ data.lesson_count }}</td>
+                    <td>{{ data.attend_days }}</td>
+                    <td>{{ data.attendance_rate|floatformat:2 }}%</td>
+                    <td>{{ data.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
