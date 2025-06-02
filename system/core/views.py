@@ -16,6 +16,7 @@ def home(request):
     print(f"Request host: {request.get_host()}")  # ログにホスト名を出力
     return render(request, 'core/home.html')
 
+
 #アカウント作成
 def register_student(request):
     if request.method == 'POST':
