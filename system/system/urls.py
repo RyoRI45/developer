@@ -27,5 +27,5 @@ urlpatterns = [
     path('', lambda request: redirect('core/', permanent=True)),  # ★これを追加！
 ]
 
-if settings.DEBUG:
+if settings.DEBUG and settings.STATICFILES_DIRS:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
