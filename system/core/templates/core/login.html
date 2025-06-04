@@ -26,3 +26,17 @@
     </form>
 </div>
 {% endblock %}
+
+<!-- 登録フォーム -->
+<h2>アカウント作成</h2>
+<form method="post" action="{% url 'core:login' %}">
+    {% csrf_token %}
+    {% if register_error %}
+        <p style="color: red;">{{ register_error }}</p>
+    {% endif %}
+    <label for="student_name">名前:</label>
+    <input type="text" name="student_name" required>
+    <label for="password">パスワード:</label>
+    <input type="password" name="password" required>
+    <button type="submit" name="register">アカウント作成</button>
+</form>
