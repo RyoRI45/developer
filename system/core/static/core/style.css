@@ -1,0 +1,11 @@
+body {
+    background-image: url("/static/core/images/physics_formula.png");  /* ← 画像のパスに注意 */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+    color: #333;
+}
+
