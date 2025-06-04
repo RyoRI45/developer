@@ -17,31 +17,47 @@ def home(request):
     return render(request, 'core/home.html')
 
 
-#アカウント作成
+# #アカウント作成
+# def register_student(request):
+#     if request.method == 'POST':
+#         student_name = request.POST.get('student_name', '').strip()
+#         password = request.POST.get('password', '').strip()
+
+#         # 入力値のチェック
+#         if not student_name or not password:
+#             return render(request, 'core/register_student.html', {
+#                 'error': '全ての項目を入力してください。'
+#             })
+
+#         # 学生名が重複しないかチェック
+#         if Student.objects.filter(student_name=student_name).exists():
+#             return render(request, 'core/register_student.html', {
+#                 'error': 'この学生名は既に登録されています。'
+#             })
+
+#         # ランダムな student_id を生成して Student モデルに登録
+#         student_id = str(uuid.uuid4())[:8]  # UUIDの最初の8文字をIDに使用
+#         Student.objects.create(student_id=student_id, student_name=student_name, password=password)
+
+#         return redirect('home')  # 登録後はホームへリダイレクト
+
+#     return render(request, 'core/register_student.html')
+# アカウント作成
 def register_student(request):
+    register_error = None
+
     if request.method == 'POST':
-        student_name = request.POST.get('student_name', '').strip()
-        password = request.POST.get('password', '').strip()
+        student_name = request.POST.get('student_name')
+        password = request.POST.get('password')
 
-        # 入力値のチェック
-        if not student_name or not password:
-            return render(request, 'core/register_student.html', {
-                'error': '全ての項目を入力してください。'
-            })
+        if User.objects.filter(username=student_name).exists():
+            register_error = "この名前はすでに使われています"
+        else:
+            user = User.objects.create_user(username=student_name, password=password)
+            login(request, user)  # 登録後に自動ログイン
+            return redirect('core:home')
 
-        # 学生名が重複しないかチェック
-        if Student.objects.filter(student_name=student_name).exists():
-            return render(request, 'core/register_student.html', {
-                'error': 'この学生名は既に登録されています。'
-            })
-
-        # ランダムな student_id を生成して Student モデルに登録
-        student_id = str(uuid.uuid4())[:8]  # UUIDの最初の8文字をIDに使用
-        Student.objects.create(student_id=student_id, student_name=student_name, password=password)
-
-        return redirect('home')  # 登録後はホームへリダイレクト
-
-    return render(request, 'core/register_student.html')
+    return render(request, 'core/login.html', {'register_error': register_error})
 
 # def login_view(request):
 #     if request.method == 'POST':
@@ -65,21 +81,37 @@ def register_student(request):
 #     # GETリクエスト時、通常のログインページを表示
 #     return render(request, 'core/login.html')
 
-# ログイン
+# # ログイン
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST['student_name']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#             # 学生 ID をセッションに保存（仮の値を使用）
+#             request.session['student_id'] = 'A001'
+#             print(f"ログイン成功: セッションキー = {request.session.session_key}, student_id = {request.session.get('student_id')}")
+#             return redirect('student_home')
+#         else:
+#             print("ログイン失敗")
+#     return render(request, 'core/login.html')
+
+# ログイン・アカウント作成
 def login_view(request):
+    error = None
     if request.method == 'POST':
-        username = request.POST['student_name']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
+        student_name = request.POST.get('student_name')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=student_name, password=password)
         if user is not None:
             login(request, user)
-            # 学生 ID をセッションに保存（仮の値を使用）
-            request.session['student_id'] = 'A001'
-            print(f"ログイン成功: セッションキー = {request.session.session_key}, student_id = {request.session.get('student_id')}")
-            return redirect('student_home')
+            return redirect('core:home')  # ログイン後の遷移先
         else:
-            print("ログイン失敗")
-    return render(request, 'core/login.html')
+            error = "名前またはパスワードが間違っています"
+
+    return render(request, 'core/login.html', {'error': error})
 
 # ログアウト
 def logout_view(request):
