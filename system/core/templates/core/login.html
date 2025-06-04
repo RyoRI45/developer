@@ -3,40 +3,35 @@
 {% block content %}
 <!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1>ログイン</h1>
-    <!-- ナビゲーションバー -->
+    <h1>ログイン・アカウント作成</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
-            <li><a href="{% url 'core:register_student' %}" style="text-decoration: none; color: white; font-weight: bold;">アカウント作成</a></li>
         </ul>
     </nav>
 </header>
 
-<form method="post" class="form-container" action="{% url 'core:login' %}?next={{ request.GET.next }}">
-    {% csrf_token %}
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
-    <label for="student_name">名前:</label>
-    <input type="text" id="student_name" name="student_name" required>
-    <label for="password">パスワード:</label>
-    <input type="password" id="password" name="password" required>
-    <button type="submit" class="btn">ログイン</button>
+<!-- 共通フォーム -->
+<div style="padding: 20px;">
+    <form method="post" action="{% url 'core:login' %}?next={{ request.GET.next }}">
+        {% csrf_token %}
+        {% if error %}
+            <p class="error" style="color: red;">{{ error }}</p>
+        {% endif %}
+        {% if register_error %}
+            <p class="error" style="color: red;">{{ register_error }}</p>
+        {% endif %}
+        
+        <label for="student_name">名前:</label>
+        <input type="text" id="student_name" name="student_name" required>
+        <label for="password">パスワード:</label>
+        <input type="password" id="password" name="password" required>
+
+        <!-- ボタンで処理を分岐 -->
+        <div style="margin-top: 10px;">
+            <button type="submit" name="action" value="login">ログイン</button>
+            <button type="submit" name="action" value="register">アカウント作成</button>
+        </div>
     </form>
 </div>
-
-<!-- 登録フォーム -->
-<h2>アカウント作成</h2>
-<form method="post" action="{% url 'core:login' %}">
-    {% csrf_token %}
-    {% if register_error %}
-        <p style="color: red;">{{ register_error }}</p>
-    {% endif %}
-    <label for="student_name">名前:</label>
-    <input type="text" name="student_name" required>
-    <label for="password">パスワード:</label>
-    <input type="password" name="password" required>
-    <button type="submit" name="register">アカウント作成</button>
-</form>
 {% endblock %}
