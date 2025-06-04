@@ -100,18 +100,34 @@ def register_student(request):
 # ログイン・アカウント作成
 def login_view(request):
     error = None
+    register_error = None
+
     if request.method == 'POST':
-        student_name = request.POST.get('student_name')
-        password = request.POST.get('password')
+        # どちらのボタンが押されたか確認
+        if 'login' in request.POST:
+            student_name = request.POST.get('student_name')
+            password = request.POST.get('password')
+            user = authenticate(request, username=student_name, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('core:home')
+            else:
+                error = "名前またはパスワードが間違っています"
 
-        user = authenticate(request, username=student_name, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('core:home')  # ログイン後の遷移先
-        else:
-            error = "名前またはパスワードが間違っています"
+        elif 'register' in request.POST:
+            student_name = request.POST.get('student_name')
+            password = request.POST.get('password')
+            if User.objects.filter(username=student_name).exists():
+                register_error = "この名前はすでに使われています"
+            else:
+                user = User.objects.create_user(username=student_name, password=password)
+                login(request, user)
+                return redirect('core:home')
 
-    return render(request, 'core/login.html', {'error': error})
+    return render(request, 'core/login.html', {
+        'error': error,
+        'register_error': register_error
+    })
 
 # ログアウト
 def logout_view(request):
