@@ -9,6 +9,7 @@ from django.conf import settings
 import uuid
 from django.shortcuts import get_object_or_404
 
+
 # Create your views here.
 
 def home(request):
@@ -54,8 +55,9 @@ def register_student(request):
             register_error = "この名前はすでに使われています"
         else:
             user = User.objects.create_user(username=student_name, password=password)
+            Student.objects.create(user=user)  # ← ここが超重要です！
             login(request, user)  # 登録後に自動ログイン
-            return redirect('core:home')
+            return redirect('core:grade_view')
 
     return render(request, 'core/login.html', {'register_error': register_error})
 
@@ -110,7 +112,7 @@ def login_view(request):
             user = authenticate(request, username=student_name, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('core:home')
+                return redirect('core:grade_view')
             else:
                 error = "名前またはパスワードが間違っています"
 
@@ -122,7 +124,7 @@ def login_view(request):
             else:
                 user = User.objects.create_user(username=student_name, password=password)
                 login(request, user)
-                return redirect('core:home')
+                return redirect('core:login')
 
     return render(request, 'core/login.html', {
         'error': error,
