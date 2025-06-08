@@ -55,9 +55,9 @@ def register_student(request):
             register_error = "この名前はすでに使われています"
         else:
             user = User.objects.create_user(username=student_name, password=password)
-            Student.objects.create(user=user)  # ← ここが超重要です！
+            Student.objects.create(user=user)  # Student オブジェクトを作成
             login(request, user)  # 登録後に自動ログイン
-            return redirect('core:grade_view')
+            return redirect('core:grade_view')  # 成績ページへリダイレクト
 
     return render(request, 'core/login.html', {'register_error': register_error})
 
@@ -245,12 +245,17 @@ def calculate_gpa(student_id):
     gpa = total_grade / subjects.count()
     return round(gpa, 2)  # 小数点以下2桁で丸める
 
+@login_required
+@login_required
 def grade_view(request):
-    host = request.get_host()  # ホスト名を取得
-    print(f"Grade view page accessed from host: {host}")  # ログにホスト名を出力
-    
-    student_id = request.session.get('student_id')
-    student = Student.objects.get(student_id=student_id)
+    host = request.get_host()
+    print(f"Grade view page accessed from host: {host}")
+
+    try:
+        student = Student.objects.get(student_name=request.user.username)
+    except Student.DoesNotExist:
+        return render(request, 'core/error.html', {'error_message': 'Student情報が見つかりません。'})
+
     subjects = Subject.objects.filter(student=student)
 
     # GPA計算
@@ -261,7 +266,6 @@ def grade_view(request):
     if gpa >= 4.0:
         message = '今の成績を維持しましょう'
     elif 2.5 <= gpa < 4.0:
-        # subject_scoreが低い科目を取得（例: スコアが2未満の科目を改善対象とする）
         low_score_subjects = subjects.filter(subject_score__lt=2)
         if low_score_subjects.exists():
             low_score_names = ', '.join([subject.subject_name for subject in low_score_subjects])
@@ -281,8 +285,9 @@ def attendance_plan(request):
     host = request.get_host()  # ホスト名を取得
     print(f"Attendance plan page accessed from host: {host}")  # ログにホスト名を出力
     
-    student_id = request.session.get('student_id')
-    student = Student.objects.get(student_id=student_id)
+    # student_id = request.session.get('student_id')
+    # student = Student.objects.get(student_id=student_id)
+    student = Student.objects.get(user=request.user)
     subjects = Subject.objects.filter(student=student)
 
     # 出席率計算
