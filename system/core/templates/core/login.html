@@ -13,7 +13,7 @@
 
 <!-- 共通フォーム -->
 <div style="padding: 20px;">
-    <form method="post" action="{% url 'core:login' %}?next={{ request.GET.next }}">
+    <form method="post" action="{% url 'core:login' %}">
         {% csrf_token %}
         {% if error %}
             <p class="error" style="color: red;">{{ error }}</p>

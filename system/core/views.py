@@ -123,6 +123,10 @@ def login_view(request):
                 register_error = "この名前はすでに使われています"
             else:
                 user = User.objects.create_user(username=student_name, password=password)
+                
+                # ここで Student オブジェクトも作成
+                Student.objects.create(user=user)
+                
                 login(request, user)
                 return redirect('core:login')
 
