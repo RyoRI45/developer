@@ -1,35 +1,22 @@
 <!-- DEBUG =-->
- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}
 ホーム - Learning Support
 {% endblock %}
 
 {% block content %}
-<!-- ヘッダー -->
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <!-- ナビゲーションバー -->
-    <nav>
-        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
-            <li><a href="{% url 'core:login' %}" style="text-decoration: none; color: white; font-weight: bold;">ログイン</a></li>
-            <!-- <li><a href="{% url 'core:register_student' %}" style="text-decoration: none; color: white; font-weight: bold;">アカウント作成</a></li> -->
-        </ul>
-    </nav>
+<!-- ヘッダー（ログインリンク削除） -->
+<header style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
+    <h1 style="margin: 0;">Learning Support ホーム</h1>
 </header>
 
-<div class="home-container">
+<!-- コンテンツ全体を中央に配置 -->
+<div class="home-container" style="text-align: center; margin-top: 80px;">
     <h2>Welcome to Learning Support</h2>
     <p>あなたの学習をサポートするアプリです。</p>
 
-    <!-- ボタンはスタイルを改善し、中央揃え -->
-    <div style="text-align: center; margin-top: 20px;">
-        <form method="GET" action="{% url 'core:login' %}" style="display: inline;">
-            <button type="submit" class="btn">ログイン</button>
-        </form>
-        <!-- <form method="GET" action="{% url 'core:register_student' %}" style="display: inline; margin-left: 10px;">
-            <button type="submit" class="btn">アカウント作成</button>
-        </form>
-         -->
-    </div>
+    <!-- ログインボタン（中央） -->
+    <a href="{% url 'core:login' %}" class="btn" style="margin-top: 20px; display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; border-radius: 6px; text-decoration: none;">ログイン</a>
 </div>
 {% endblock %}

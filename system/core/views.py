@@ -112,7 +112,7 @@ def login_view(request):
             user = authenticate(request, username=student_name, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('core:grade_view')
+                return redirect('core:student_home')
             else:
                 error = "名前またはパスワードが間違っています"
 
@@ -139,7 +139,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)  # ユーザーをログアウト
     request.session.flush()  # セッションを完全にクリア
-    return redirect('login')  # ログイン画面にリダイレクト
+    return redirect('core:login')  # ログイン画面にリダイレクト
 
 # def student_home(request):
 #     host = request.get_host()
