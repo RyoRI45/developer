@@ -4,7 +4,6 @@
 <!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
     <h1 style="margin: 0; font-size: 1.5rem;">ようこそ、{{ student.student_name }}さん</h1>
-    <!-- ナビゲーションバー -->
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
@@ -20,22 +19,22 @@
 </header>
 
 <!-- メインコンテンツ -->
-<div class="content-container" style="padding: 20px;">
-    <p>学習管理をお手伝いします。</p>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px;">
+    <h2 style="text-align: center;">学習管理をお手伝いします。</h2>
 
-    <!-- ボタンエリア -->
-    <div class="button-group" style="margin-top: 20px;">
-        <form method="GET" action="{% url 'core:manage_grades' %}" style="display: inline;">
+    <div style="margin-top: 30px; display: flex; gap: 20px;">
+        <form method="GET" action="{% url 'core:manage_grades' %}">
             <button type="submit" class="btn btn-primary">成績管理</button>
         </form>
-        <form method="GET" action="{% url 'core:attendance_plan' %}" style="display: inline;">
+        <form method="GET" action="{% url 'core:attendance_plan' %}">
             <button type="submit" class="btn btn-primary">出席計画</button>
         </form>
-        <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
+        <form method="POST" action="{% url 'core:logout' %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">ログアウト</button>
         </form>
     </div>
 </div>
 {% endblock %}
+
 

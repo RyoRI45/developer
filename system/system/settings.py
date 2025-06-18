@@ -137,4 +137,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# settings.py に以下を追加
+LOGIN_URL = 'core:login'
+
+
 LOGIN_REDIRECT_URL = '/core/grade/'
