@@ -18,11 +18,11 @@
         <p>ここでは、科目と成績の登録を行います</p>
 
         <!-- デバッグ情報の表示 -->
-        {% if debug_info %}
+        <!-- {% if debug_info %}
             <div style="margin-bottom: 15px; color: red; font-weight: bold;">
                 デバッグ情報: {{ debug_info }}
             </div>
-        {% endif %}
+        {% endif %} -->
 
         <form method="POST" action="">
             {% csrf_token %}
@@ -70,6 +70,18 @@
                     <option value="3限目">3限目（13:30～15:00）</option>
                     <option value="4限目">4限目（15:30～17:00）</option>
                 </select>
+            </div>
+            
+            <!-- 授業回数 -->
+            <div style="margin-bottom: 15px;">
+                <label for="lesson_count" style="display: block; font-weight: bold;">授業回数</label>
+                <input type="number" id="lesson_count" name="lesson_count" required min="1" style="width: 100%; padding: 10px; font-size: 1rem;">
+            </div>
+
+            <!-- 出席日数 -->
+            <div style="margin-bottom: 15px;">
+                <label for="attend_days" style="display: block; font-weight: bold;">出席日数</label>
+                <input type="number" id="attend_days" name="attend_days" required min="0" style="width: 100%; padding: 10px; font-size: 1rem;">
             </div>
 
             <!-- 登録ボタン -->

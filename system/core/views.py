@@ -208,9 +208,11 @@ def subject_register(request):
         grade = request.POST.get('grade')
         date = request.POST.get('date')
         table = request.POST.get('table')
+        lesson_count = request.POST.get('lesson_count')
+        attend_days = request.POST.get('attend_days')
 
         # 入力チェック
-        if not name or not grade or not date or not table:
+        if not all([name, grade, date, table, lesson_count, attend_days]):
             return render(request, 'core/subject_register.html', {
                 'grades': grades,
                 'error': '全ての項目を入力してください。',
@@ -225,17 +227,22 @@ def subject_register(request):
 
             # Subject オブジェクトを作成
             Subject.objects.create(
-                student=student,  # ForeignKey に Student オブジェクトを設定
+                student=student,
                 subject_name=name,
                 subject_score=int(grade),
                 date=date,
-                table=table
+                table=table,
+                # lesson_count=int(lesson_count),
+                # attend_days=int(attend_days)
+                lesson_count=int(request.POST.get('lesson_count', 0)),
+                attend_days=int(request.POST.get('attend_days', 0))
             )
-            return redirect('student_home')  # 成功時にリダイレクト
+
+            return redirect('core:student_home')  # 成功時にリダイレクト
 
         except Exception as e:
             debug_info += f" | エラー: {str(e)}"
-            print(f"エラー: {str(e)}")  # デバッグ用
+            print(f"エラー: {str(e)}")
             return render(request, 'core/subject_register.html', {
                 'grades': grades,
                 'error': '登録中にエラーが発生しました。',
@@ -304,17 +311,16 @@ def attendance_plan(request):
     # 出席率計算
     attendance_data = []
     for subject in subjects:
-        attendance_rate = (subject.attend_days / subject.lesson_count) * 100
+        if subject.lesson_count == 0:
+            attendance_rate = 0  # ゼロ除算を防ぐ
+        else:
+            attendance_rate = (subject.attend_days / subject.lesson_count) * 100
+
         if attendance_rate >= 70:
             status = '現状を維持しましょう'
         elif attendance_rate == 70:
             status = '少し危険です'
         else:
             status = '警告！出席率が低下しています'
-        attendance_data.append({
-            'subject_name': subject.subject_name,
-            'attendance_rate': attendance_rate,
-            'status': status,
-        })
 
     return render(request, 'core/attendance_plan.html', {'attendance_data': attendance_data})
