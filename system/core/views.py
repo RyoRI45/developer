@@ -8,7 +8,9 @@ from core.models import Student  # Student モデルのインポート
 from django.conf import settings
 import uuid
 from django.shortcuts import get_object_or_404
-
+from django.views.decorators.cache import never_cache
+from datetime import datetime
+import locale
 
 # Create your views here.
 
@@ -174,6 +176,7 @@ def logout_view(request):
 #         {'student': student}  # 学生情報をテンプレートに渡す
 #     )
 
+@never_cache
 def student_home(request):
     session_key = request.session.session_key  # 現在のセッションキー
     print(f"現在のセッションキー: {session_key}")
@@ -187,13 +190,23 @@ def student_home(request):
     # 学生情報を取得
     student = Student.objects.get(student_id=student_id)
 
-    return render(request, 'core/student_home.html', {'student': student})
+    # 今日の曜日を日本語で取得
+    weekday_map = ['月', '火', '水', '木', '金', '土', '日']
+    today = datetime.now().weekday() # 0=月曜、6=日曜
+    today_str = weekday_map[today]
+
+    # 今日の曜日に対応する履修科目を取得
+    today_subjects = Subject.objects.filter(student=student, day_of_week=today_str)
+
+    return render(request, 'core/student_home.html', 
+                  {'student': student, 'today_subjects': today_subjects, 'today_str': today_str})
 
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得
     print(f"Manage grades page accessed from host: {host}")  # ログにホスト名を出力
     return render(request, 'core/manage_grades.html')
 
+@never_cache
 @login_required
 def subject_register(request):
     print(f"Logged-in user: {request.user}")  # デバッグ用
@@ -221,9 +234,11 @@ def subject_register(request):
 
         try:
             # Student オブジェクトの取得または作成
-            student, created = Student.objects.get_or_create(student_name=request.user.username)
-            print(f"Student作成: {created}")  # デバッグ用
-            debug_info += f" | Student作成: {created}"
+            # student, created = Student.objects.get_or_create(student_name=request.user.username)
+            # print(f"Student作成: {created}")  # デバッグ用
+            # debug_info += f" | Student作成: {created}"
+            student, created = Student.objects.get_or_create(user=request.user)
+            debug_info += f" | Student取得または作成: {'新規作成' if created else '既存'}"
 
             # Subject オブジェクトを作成
             Subject.objects.create(
@@ -263,6 +278,7 @@ def calculate_gpa(student_id):
     gpa = total_grade / subjects.count()
     return round(gpa, 2)  # 小数点以下2桁で丸める
 
+@never_cache
 @login_required
 @login_required
 def grade_view(request):
@@ -299,6 +315,7 @@ def grade_view(request):
         'message': message
     })
 
+@never_cache
 def attendance_plan(request):
     host = request.get_host()  # ホスト名を取得
     print(f"Attendance plan page accessed from host: {host}")  # ログにホスト名を出力
@@ -322,5 +339,29 @@ def attendance_plan(request):
             status = '少し危険です'
         else:
             status = '警告！出席率が低下しています'
+    
+        # ここで追加する
+        attendance_data.append({
+            'subject_name': subject.subject_name,
+            'lesson_count': subject.lesson_count,
+            'attend_days': subject.attend_days,
+            'attendance_rate': attendance_rate,
+            'status': status
+        })
 
-    return render(request, 'core/attendance_plan.html', {'attendance_data': attendance_data})
+    # ✅ 時間割データ構築を追加
+    days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日']
+    periods = ['1限目', '2限目', '3限目', '4限目']
+
+    timetable = {period: {day: '' for day in days} for period in periods}
+
+    for subject in subjects:
+        day = subject.date
+        period = subject.table
+        if day in days and period in periods:
+            timetable[period][day] = subject.subject_name
+
+    return render(request, 'core/attendance_plan.html', 
+                  {'attendance_data': attendance_data, 
+                   'timetable': timetable, 'days': days, 
+                   'periods': periods})

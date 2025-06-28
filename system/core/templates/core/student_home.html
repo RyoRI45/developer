@@ -21,6 +21,16 @@
 <!-- メインコンテンツ -->
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px;">
     <h2 style="text-align: center;">学習管理をお手伝いします。</h2>
+    {% if today_subjects %}
+    <p>本日の履修科目は 
+        {% for subject in today_subjects %}
+            {{ subject.subject_name }}{% if not forloop.last %}、{% endif %}
+        {% endfor %}
+        です。
+    </p>
+    {% else %}
+        <p>本日の履修科目は登録されていません。</p>
+    {% endif %}
 
     <div style="margin-top: 30px; display: flex; gap: 20px;">
         <form method="GET" action="{% url 'core:manage_grades' %}">
@@ -36,5 +46,3 @@
     </div>
 </div>
 {% endblock %}
-
-

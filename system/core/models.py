@@ -20,6 +20,16 @@ class Subject(models.Model):
         ('専門', '専門'),
     ]
 
+    DAY_CHOICES = [
+    ('月', '月曜日'),
+    ('火', '火曜日'),
+    ('水', '水曜日'),
+    ('木', '木曜日'),
+    ('金', '金曜日'),
+    ]
+
+    day_of_week = models.CharField(max_length=2, choices=DAY_CHOICES, default='月')
+
     subject_id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     subject_name = models.CharField(max_length=50)

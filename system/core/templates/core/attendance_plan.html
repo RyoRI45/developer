@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
@@ -33,6 +34,28 @@
                     <td>{{ data.attend_days }}</td>
                     <td>{{ data.attendance_rate|floatformat:2 }}%</td>
                     <td>{{ data.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 style="margin-top: 40px;">時間割</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th></th>
+                {% for day in days %}
+                    <th>{{ day|slice:":1" }}</th>  <!-- 「月曜日」→「月」のように表示 -->
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for period in periods %}
+                <tr>
+                    <td>{{ period }}</td>
+                    {% for day in days %}
+                        <td>{{ timetable|dict_get:period|dict_get:day }}</td>
+                    {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>
