@@ -221,6 +221,7 @@ def subject_register(request):
         grade = request.POST.get('grade')
         date = request.POST.get('date')
         table = request.POST.get('table')
+        day_of_week = request.POST.get('day_of_week')  # ← 追加
         lesson_count = request.POST.get('lesson_count')
         attend_days = request.POST.get('attend_days')
 
@@ -244,6 +245,7 @@ def subject_register(request):
             Subject.objects.create(
                 student=student,
                 subject_name=name,
+                day_of_week=day_of_week,  # ← 追加
                 subject_score=int(grade),
                 date=date,
                 table=table,

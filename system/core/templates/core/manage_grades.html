@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
     <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
-    <!-- ナビゲーションバー -->
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホームに戻る</a></li>
@@ -18,14 +18,18 @@
     </nav>
 </header>
 
-<div class="content-container">
-    <div class="button-group">
-        <form method="GET" action="{% url 'core:subject_register' %}" style="display: inline;">
-            <button type="submit" class="btn">科目・成績登録</button>
+<!-- メインコンテンツ -->
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px;">
+    <h2 style="text-align: center;">成績関連の操作を選択してください</h2>
+
+    <div style="margin-top: 30px; display: flex; gap: 20px;">
+        <form method="GET" action="{% url 'core:subject_register' %}">
+            <button type="submit" class="btn btn-primary">科目・成績登録</button>
         </form>
-        <form method="GET" action="{% url 'core:grade_view' %}" style="display: inline;">
-            <button type="submit" class="btn">成績閲覧</button>
+        <form method="GET" action="{% url 'core:grade_view' %}">
+            <button type="submit" class="btn btn-primary">成績閲覧</button>
         </form>
     </div>
 </div>
 {% endblock %}
+

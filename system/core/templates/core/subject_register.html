@@ -17,13 +17,6 @@
     <div style="width: 100%; max-width: 400px; text-align: center;">
         <p>ここでは、科目と成績の登録を行います</p>
 
-        <!-- デバッグ情報の表示 -->
-        <!-- {% if debug_info %}
-            <div style="margin-bottom: 15px; color: red; font-weight: bold;">
-                デバッグ情報: {{ debug_info }}
-            </div>
-        {% endif %} -->
-
         <form method="POST" action="">
             {% csrf_token %}
             {% if error %}
@@ -39,7 +32,7 @@
             <!-- 成績 -->
             <div style="margin-bottom: 15px;">
                 <label for="grade" style="display: block; font-weight: bold;">成績</label>
-                <select id="grade" name="grade" required style="width: 100%; padding: 10px; font-size: 1rem;">
+                <select name="grade" id="grade" required style="width: 100%; padding: 10px; font-size: 1rem;">
                     <option value="" disabled selected>選択してください</option>
                     {% for i in grades %}
                         <option value="{{ i }}">{{ i }}</option>
@@ -49,14 +42,14 @@
 
             <!-- 曜日 -->
             <div style="margin-bottom: 15px;">
-                <label for="date" style="display: block; font-weight: bold;">曜日</label>
-                <select id="date" name="date" required style="width: 100%; padding: 10px; font-size: 1rem;">
+                <label for="day_of_week" style="display: block; font-weight: bold;">曜日</label>
+                <select name="day_of_week" id="day_of_week" required style="width: 100%; padding: 10px; font-size: 1rem;">
                     <option value="" disabled selected>選択してください</option>
-                    <option value="月曜日">月曜日</option>
-                    <option value="火曜日">火曜日</option>
-                    <option value="水曜日">水曜日</option>
-                    <option value="木曜日">木曜日</option>
-                    <option value="金曜日">金曜日</option>
+                    <option value="月">月曜日</option>
+                    <option value="火">火曜日</option>
+                    <option value="水">水曜日</option>
+                    <option value="木">木曜日</option>
+                    <option value="金">金曜日</option>
                 </select>
             </div>
 
@@ -71,7 +64,7 @@
                     <option value="4限目">4限目（15:30～17:00）</option>
                 </select>
             </div>
-            
+
             <!-- 授業回数 -->
             <div style="margin-bottom: 15px;">
                 <label for="lesson_count" style="display: block; font-weight: bold;">授業回数</label>
