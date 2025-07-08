@@ -23,7 +23,7 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('core.urls')),
-    path('core/', include('core.urls')),  # core アプリのURLを追加
+    path('core/', include('core.urls', namespace='core')),  # core アプリのURLを追加
     path('', lambda request: redirect('core/', permanent=True)),  # ★これを追加！
 ]
 
