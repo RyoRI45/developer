@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
 from datetime import datetime
 import locale
+from django.db import IntegrityError
 
 # Create your views here.
 
@@ -102,45 +103,97 @@ def register_student(request):
 #     return render(request, 'core/login.html')
 
 # ログイン・アカウント作成
+# def login_view(request):
+#     error = None
+#     register_error = None
+
+#     if request.method == 'POST':
+#         if 'login' in request.POST:
+#             student_name = request.POST.get('student_name')
+#             password = request.POST.get('password')
+#             user = authenticate(request, username=student_name, password=password)
+#             if user is not None:
+#                 login(request, user)
+
+#                 # Student を取得してセッションに保存
+#                 student = Student.objects.get(user=user)
+#                 request.session['student_id'] = student.student_id
+
+#                 return redirect('core:student_home')
+#             else:
+#                 error = "名前またはパスワードが間違っています"
+
+#         elif 'register' in request.POST:
+#             student_name = request.POST.get('student_name')
+#             password = request.POST.get('password')
+#             if User.objects.filter(username=student_name).exists():
+#                 register_error = "この名前はすでに使われています"
+#             else:
+#                 user = User.objects.create_user(username=student_name, password=password)
+
+#                 # Student を作成し、セッションに保存
+#                 student = Student.objects.create(user=user)
+
+#                 login(request, user)
+#                 request.session['student_id'] = student.student_id
+
+#                 return redirect('core:student_home')
+
+#     return render(request, 'core/login.html', {
+#         'error': error,
+#         'register_error': register_error
+#     })
+
+# ログイン・アカウント作成
 def login_view(request):
     error = None
     register_error = None
 
     if request.method == 'POST':
+        student_name = request.POST.get('student_name')
+        password = request.POST.get('password')
+
+        # ログイン処理
         if 'login' in request.POST:
-            student_name = request.POST.get('student_name')
-            password = request.POST.get('password')
             user = authenticate(request, username=student_name, password=password)
             if user is not None:
                 login(request, user)
-
-                # Student を取得してセッションに保存
-                student = Student.objects.get(user=user)
-                request.session['student_id'] = student.student_id
+                try:
+                    student = Student.objects.get(user=user)
+                    request.session['student_id'] = student.student_id
+                except Student.DoesNotExist:
+                    error = "このユーザーに対応するStudent情報が存在しません"
+                    return render(request, 'core/login.html', {'error': error})
 
                 return redirect('core:student_home')
             else:
                 error = "名前またはパスワードが間違っています"
 
+        # アカウント作成処理
         elif 'register' in request.POST:
             student_name = request.POST.get('student_name')
             password = request.POST.get('password')
+
             if User.objects.filter(username=student_name).exists():
                 register_error = "この名前はすでに使われています"
             else:
-                user = User.objects.create_user(username=student_name, password=password)
+                try:
+                    # Userを作成
+                    user = User.objects.create_user(username=student_name, password=password)
 
-                # Student を作成し、セッションに保存
-                student = Student.objects.create(user=user)
+                    # Studentを作成（例外に備える）
+                    student = Student.objects.create(user=user)
 
-                login(request, user)
-                request.session['student_id'] = student.student_id
-
-                return redirect('core:student_home')
+                    login(request, user)
+                    request.session['student_id'] = student.student_id
+                    return redirect('core:student_home')
+                except IntegrityError:
+                    register_error = "Student の作成に失敗しました（重複エラー）"
+                    user.delete()  # 必要であればUserも削除して巻き戻す
 
     return render(request, 'core/login.html', {
         'error': error,
-        'register_error': register_error
+        'register_error': register_error,
     })
 
 

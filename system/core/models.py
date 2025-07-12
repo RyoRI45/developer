@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # ← これを追加
-    student_id = models.CharField(max_length=20, primary_key=True)
+    student_id = models.AutoField(max_length=20, primary_key=True)
     student_name = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
 
