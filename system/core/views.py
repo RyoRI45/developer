@@ -272,14 +272,14 @@ def subject_register(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         grade = request.POST.get('grade')
-        date = request.POST.get('date')
+        #date = request.POST.get('date')
         table = request.POST.get('table')
         day_of_week = request.POST.get('day_of_week')  # ← 追加
         lesson_count = request.POST.get('lesson_count')
         attend_days = request.POST.get('attend_days')
 
         # 入力チェック
-        if not all([name, grade, date, table, lesson_count, attend_days]):
+        if not all([name, grade, table, lesson_count, attend_days]):
             return render(request, 'core/subject_register.html', {
                 'grades': grades,
                 'error': '全ての項目を入力してください。',
@@ -300,7 +300,7 @@ def subject_register(request):
                 subject_name=name,
                 day_of_week=day_of_week,  # ← 追加
                 subject_score=int(grade),
-                date=date,
+                # date=date,
                 table=table,
                 # lesson_count=int(lesson_count),
                 # attend_days=int(attend_days)
