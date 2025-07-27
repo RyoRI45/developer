@@ -54,7 +54,15 @@
                 <tr>
                     <td>{{ period }}</td>
                     {% for day in days %}
-                        <td>{{ timetable|dict_get:period|dict_get:day }}</td>
+                        {% with timetable|dict_get:period as day_table %}
+                            <td>
+                                {% if day_table|dict_get:day %}
+                                    {{ day_table|dict_get:day }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                        {% endwith %}
                     {% endfor %}
                 </tr>
             {% endfor %}

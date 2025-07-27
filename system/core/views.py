@@ -229,30 +229,44 @@ def logout_view(request):
 #         {'student': student}  # 学生情報をテンプレートに渡す
 #     )
 
-@never_cache
+def get_today():
+    days = ['月', '火', '水', '木', '金', '土', '日']
+    return days[datetime.today().weekday()]
+
+# @never_cache
+# def student_home(request):
+#     session_key = request.session.session_key  # 現在のセッションキー
+#     print(f"現在のセッションキー: {session_key}")
+
+#     student_id = request.session.get('student_id')  # セッションに保存された student_id
+#     print(f"セッションから取得した student_id: {student_id}")
+
+#     if not student_id:
+#         return redirect('core:login')
+
+#     # 学生情報を取得
+#     student = Student.objects.get(student_id=student_id)
+
+#     # 今日の曜日を日本語で取得
+#     weekday_map = ['月', '火', '水', '木', '金', '土', '日']
+#     today = datetime.now().weekday() # 0=月曜、6=日曜
+#     today_str = weekday_map[today]
+
+#     # 今日の曜日に対応する履修科目を取得
+#     today_subjects = Subject.objects.filter(student=student, day_of_week=today_str)
+
+#     return render(request, 'core/student_home.html', 
+#                   {'student': student, 'today_subjects': today_subjects, 'today_str': today_str})
+
+@login_required
 def student_home(request):
-    session_key = request.session.session_key  # 現在のセッションキー
-    print(f"現在のセッションキー: {session_key}")
+    student = Student.objects.get(user=request.user)
+    today_subjects = Subject.objects.filter(student=student, day_of_week=get_today())
 
-    student_id = request.session.get('student_id')  # セッションに保存された student_id
-    print(f"セッションから取得した student_id: {student_id}")
-
-    if not student_id:
-        return redirect('core:login')
-
-    # 学生情報を取得
-    student = Student.objects.get(student_id=student_id)
-
-    # 今日の曜日を日本語で取得
-    weekday_map = ['月', '火', '水', '木', '金', '土', '日']
-    today = datetime.now().weekday() # 0=月曜、6=日曜
-    today_str = weekday_map[today]
-
-    # 今日の曜日に対応する履修科目を取得
-    today_subjects = Subject.objects.filter(student=student, day_of_week=today_str)
-
-    return render(request, 'core/student_home.html', 
-                  {'student': student, 'today_subjects': today_subjects, 'today_str': today_str})
+    return render(request, 'core/student_home.html', {
+        'student': student,
+        'today_subjects': today_subjects
+    })
 
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得
@@ -335,13 +349,13 @@ def calculate_gpa(student_id):
 
 @never_cache
 @login_required
-@login_required
 def grade_view(request):
     host = request.get_host()
     print(f"Grade view page accessed from host: {host}")
 
     try:
-        student = Student.objects.get(student_name=request.user.username)
+        # 修正ポイント：user から student を取得
+        student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
         return render(request, 'core/error.html', {'error_message': 'Student情報が見つかりません。'})
 
@@ -370,53 +384,128 @@ def grade_view(request):
         'message': message
     })
 
-@never_cache
-def attendance_plan(request):
-    host = request.get_host()  # ホスト名を取得
-    print(f"Attendance plan page accessed from host: {host}")  # ログにホスト名を出力
-    
-    # student_id = request.session.get('student_id')
-    # student = Student.objects.get(student_id=student_id)
-    student = Student.objects.get(user=request.user)
-    subjects = Subject.objects.filter(student=student)
 
-    # 出席率計算
+@never_cache
+# def attendance_plan(request):
+#     host = request.get_host()  # ホスト名を取得
+#     print(f"Attendance plan page accessed from host: {host}")  # ログにホスト名を出力
+    
+#     # student_id = request.session.get('student_id')
+#     # student = Student.objects.get(student_id=student_id)
+#     student = Student.objects.get(user=request.user)
+#     # subjects = Subject.objects.filter(student=student)
+#     subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
+
+
+#     # 出席率計算
+#     attendance_data = []
+
+#     # 変換マップ
+#     day_map = {
+#         '月': '月曜日',
+#         '火': '火曜日',
+#         '水': '水曜日',
+#         '木': '木曜日',
+#         '金': '金曜日',
+#     }
+    
+#     for subject in subjects:
+#         short_day = subject.date  # '月', '火', etc.
+#         day = day_map.get(short_day, short_day)  # '月曜日' などに変換
+#         period = subject.table
+#         if day in days and period in periods:
+#             timetable[period][day] = subject.subject_name
+
+#         if subject.lesson_count == 0:
+#             attendance_rate = 0  # ゼロ除算を防ぐ
+#         else:
+#             attendance_rate = (subject.attend_days / subject.lesson_count) * 100
+
+#         if attendance_rate >= 70:
+#             status = '現状を維持しましょう'
+#         elif attendance_rate == 70:
+#             status = '少し危険です'
+#         else:
+#             status = '警告！出席率が低下しています'
+    
+#         # ここで追加する
+#         attendance_data.append({
+#             'subject_name': subject.subject_name,
+#             'lesson_count': subject.lesson_count,
+#             'attend_days': subject.attend_days,
+#             'attendance_rate': attendance_rate,
+#             'status': status
+#         })
+
+#     # ✅ 時間割データ構築を追加
+#     days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日']
+#     periods = ['1限目', '2限目', '3限目', '4限目']
+
+#     timetable = {period: {day: '' for day in days} for period in periods}
+
+#     for subject in subjects:
+#         day = subject.date
+#         period = subject.table
+#         if day in days and period in periods:
+#             timetable[period][day] = subject.subject_name
+
+#     return render(request, 'core/attendance_plan.html', 
+#                   {'attendance_data': attendance_data, 
+#                    'timetable': timetable, 'days': days, 
+#                    'periods': periods})
+
+def attendance_plan(request):
+    student = Student.objects.get(user=request.user)
+    subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
+
+    # ✅ 表示用の曜日（「月曜日」「火曜日」など）
+    days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日']
+    periods = ['1限目', '2限目', '3限目', '4限目']
+
+    # ✅ 「月」「火」→「月曜日」「火曜日」に変換するマップ
+    day_map = {
+        '月': '月曜日', '火': '火曜日', '水': '水曜日', '木': '木曜日', '金': '金曜日',
+        '月曜日': '月曜日', '火曜日': '火曜日', '水曜日': '水曜日', '木曜日': '木曜日', '金曜日': '金曜日',
+    }
+
+    # ✅ 時限→曜日→科目名 形式で初期化
+    timetable = {}
+    for subject in subjects:
+        period = subject.table.strip()         # 例: "1限目"
+        raw_day = subject.day_of_week.strip()  # 例: "木"
+        day = day_map.get(raw_day, raw_day)    # 例: "木" → "木曜日"
+
+        if period not in timetable:
+            timetable[period] = {}
+        timetable[period][day] = subject.subject_name
+
+    # ✅ 出席データの計算
     attendance_data = []
     for subject in subjects:
         if subject.lesson_count == 0:
-            attendance_rate = 0  # ゼロ除算を防ぐ
+            attendance_rate = 0
         else:
             attendance_rate = (subject.attend_days / subject.lesson_count) * 100
 
-        if attendance_rate >= 70:
+        if attendance_rate > 70:
             status = '現状を維持しましょう'
         elif attendance_rate == 70:
             status = '少し危険です'
         else:
             status = '警告！出席率が低下しています'
-    
-        # ここで追加する
+
         attendance_data.append({
             'subject_name': subject.subject_name,
             'lesson_count': subject.lesson_count,
             'attend_days': subject.attend_days,
-            'attendance_rate': attendance_rate,
+            'attendance_rate': round(attendance_rate, 1),
             'status': status
         })
 
-    # ✅ 時間割データ構築を追加
-    days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日']
-    periods = ['1限目', '2限目', '3限目', '4限目']
+    return render(request, 'core/attendance_plan.html', {
+        'attendance_data': attendance_data,
+        'timetable': timetable,
+        'days': days,
+        'periods': periods
+    })
 
-    timetable = {period: {day: '' for day in days} for period in periods}
-
-    for subject in subjects:
-        day = subject.date
-        period = subject.table
-        if day in days and period in periods:
-            timetable[period][day] = subject.subject_name
-
-    return render(request, 'core/attendance_plan.html', 
-                  {'attendance_data': attendance_data, 
-                   'timetable': timetable, 'days': days, 
-                   'periods': periods})
