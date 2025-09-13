@@ -12,6 +12,10 @@ from django.views.decorators.cache import never_cache
 from datetime import datetime
 import locale
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.contrib import messages
+# from .forms import ClassCountForm  # フォームを作っておく想定
 
 # Create your views here.
 
@@ -260,13 +264,20 @@ def get_today():
 
 @login_required
 def student_home(request):
-    student = Student.objects.get(user=request.user)
-    today_subjects = Subject.objects.filter(student=student, day_of_week=get_today())
+    # ログインしているユーザーに対応するStudentを取得
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        student = None  # 念のためエラー回避
+    
+    # 本日の履修科目を取ってくる例（必要に応じてロジック調整）
+    today_subjects = Subject.objects.filter(student=student)
 
-    return render(request, 'core/student_home.html', {
-        'student': student,
-        'today_subjects': today_subjects
-    })
+    context = {
+        "student": student,
+        "today_subjects": today_subjects,
+    }
+    return render(request, "core/student_home.html", context)
 
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得
@@ -507,5 +518,87 @@ def attendance_plan(request):
         'timetable': timetable,
         'days': days,
         'periods': periods
+    })
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Subject, Student
+
+# 授業回数登録
+@login_required
+def class_count_register(request):
+    student = Student.objects.get(user=request.user)
+    subjects = Subject.objects.filter(student=student)
+
+    lesson_range = range(1, 16)  # 1～15
+
+    if request.method == "POST":
+        subject_id = request.POST.get("subject_id")
+        lesson_count = int(request.POST.get("lesson_count"))
+
+        subject = get_object_or_404(Subject, pk=subject_id, student=student)
+
+        # 出席回数との整合性チェック
+        if subject.attend_days > lesson_count:
+            messages.error(request, "出席回数が授業回数を超えることはできません。")
+        else:
+            subject.lesson_count = lesson_count
+            subject.save()
+            messages.success(request, f"{subject.subject_name} の授業回数を {lesson_count} に更新しました。")
+
+    return render(request, "core/class_count_register.html", {
+        "subjects": subjects,
+        "lesson_range": lesson_range,
+    })
+
+# 出席回数登録
+@login_required
+def attendance_register(request):
+    student = Student.objects.get(user=request.user)
+    subjects = Subject.objects.filter(student=student)
+
+    attendance_range = range(1, 16)  # 1～15
+
+    if request.method == "POST":
+        subject_id = request.POST.get("subject_id")
+        attend_days = int(request.POST.get("attend_days"))
+
+        subject = get_object_or_404(Subject, pk=subject_id, student=student)
+
+        # 整合性チェック
+        if attend_days > subject.lesson_count:
+            messages.error(request, "出席回数が授業回数を超えることはできません。")
+        else:
+            subject.attend_days = attend_days
+            subject.save()
+            messages.success(request, f"{subject.subject_name} の出席回数を {attend_days} に更新しました。")
+
+    return render(request, "core/attendance_register.html", {
+        "subjects": subjects,
+        "attendance_range": attendance_range,
+    })
+
+# 成績登録
+@login_required
+@login_required
+def grade_register(request):
+    student = Student.objects.get(user=request.user)
+    subjects = Subject.objects.filter(student=student)
+
+    grade_range = range(1, 6)  # 1～5
+
+    if request.method == "POST":
+        subject_id = request.POST.get("subject_id")
+        subject_score = int(request.POST.get("subject_score"))
+
+        subject = get_object_or_404(Subject, pk=subject_id, student=student)
+
+        subject.subject_score = subject_score
+        subject.save()
+        messages.success(request, f"{subject.subject_name} の成績を {subject_score} に更新しました。")
+
+    return render(request, "core/grade_register.html", {
+        "subjects": subjects,
+        "grade_range": grade_range,
     })
 

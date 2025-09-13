@@ -3,9 +3,11 @@
 {% block content %}
 <!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">ようこそ、{{ student.student_name }}さん</h1>
+    <h1 style="margin: 0; font-size: 1.5rem;">ようこそ、{{ student.user.username }}さん</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+            <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
+            <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
             <li><a href="{% url 'core:attendance_plan' %}" style="text-decoration: none; color: white; font-weight: bold;">出席計画</a></li>
             <li>
@@ -17,6 +19,7 @@
         </ul>
     </nav>
 </header>
+
 
 <!-- メインコンテンツ -->
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px;">
@@ -33,6 +36,9 @@
     {% endif %}
 
     <div style="margin-top: 30px; display: flex; gap: 20px;">
+        <form method="GET" action="{% url 'core:student_home' %}">
+            <button type="submit" class="btn btn-primary">ホーム</button>
+        </form>
         <form method="GET" action="{% url 'core:manage_grades' %}">
             <button type="submit" class="btn btn-primary">成績管理</button>
         </form>

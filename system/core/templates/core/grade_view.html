@@ -6,31 +6,41 @@
     <!-- ナビゲーションバー -->
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
-            <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホームに戻る</a></li>
+            <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
+            <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
+            <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
             <li><a href="{% url 'core:attendance_plan' %}" style="text-decoration: none; color: white; font-weight: bold;">出席計画</a></li>
-            <li><a href="{% url 'core:logout' %}" style="text-decoration: none; color: white; font-weight: bold;">ログアウト</a></li>
+            <li>
+                <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
+                </form>
+            </li>
         </ul>
     </nav>
 </header>
 
-<div class="content-container">
-    <table class="styled-table">
+<!-- メインコンテンツ -->
+<div class="content-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 30px;">
+    <table class="styled-table" style="margin: 0 auto; border-collapse: collapse; text-align: center;">
         <thead>
             <tr>
-                <th>科目名</th>
-                <th>成績</th>
+                <th style="padding: 10px 20px; border-bottom: 2px solid #28a745;">科目名</th>
+                <th style="padding: 10px 20px; border-bottom: 2px solid #28a745;">成績</th>
             </tr>
         </thead>
         <tbody>
             {% for subject in subjects %}
                 <tr>
-                    <td>{{ subject.subject_name }}</td>
-                    <td>{{ subject.subject_score }}</td>
+                    <td style="padding: 8px 15px; border-bottom: 1px solid #ddd;">{{ subject.subject_name }}</td>
+                    <td style="padding: 8px 15px; border-bottom: 1px solid #ddd;">{{ subject.subject_score }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="grade-summary">
+
+    <!-- GPAとメッセージを中央配置 -->
+    <div class="grade-summary" style="margin-top: 20px; text-align: center;">
         <p><strong>GPA:</strong> {{ gpa|floatformat:2 }}</p>
         {% if message %}
             <p class="message">{{ message }}</p>

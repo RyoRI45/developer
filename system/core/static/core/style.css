@@ -1,5 +1,5 @@
-body {
-    background-image: url("/static/core/images/physics_formula.png");  /* ← 画像のパスに注意 */
+/* body {
+    background-image: url("/static/core/images/physics_formula.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -7,6 +7,19 @@ body {
     margin: 0;
     font-family: sans-serif;
     color: #333;
+} */  /* ← 画像のパスに注意 */
+
+body {
+    background-color: white;
+    margin: 0;
+}
+
+header {
+    background-image: url('/static/images/header-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 20px;
 }
 
 .btn {

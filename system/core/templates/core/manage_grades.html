@@ -6,7 +6,9 @@
     <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
-            <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホームに戻る</a></li>
+            <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
+            <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
+            <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
             <li><a href="{% url 'core:attendance_plan' %}" style="text-decoration: none; color: white; font-weight: bold;">出席計画</a></li>
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
@@ -22,14 +24,22 @@
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px;">
     <h2 style="text-align: center;">成績関連の操作を選択してください</h2>
 
-    <div style="margin-top: 30px; display: flex; gap: 20px;">
+    <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; width: 250px;">
         <form method="GET" action="{% url 'core:subject_register' %}">
-            <button type="submit" class="btn btn-primary">科目・成績登録</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">科目登録</button>
+        </form>
+        <form method="GET" action="{% url 'core:class_count_register' %}">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">授業回数登録</button>
+        </form>
+        <form method="GET" action="{% url 'core:attendance_register' %}">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">出席回数登録</button>
+        </form>
+        <form method="GET" action="{% url 'core:grade_register' %}">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">成績登録</button>
         </form>
         <form method="GET" action="{% url 'core:grade_view' %}">
-            <button type="submit" class="btn btn-primary">成績閲覧</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">成績閲覧</button>
         </form>
     </div>
 </div>
 {% endblock %}
-

@@ -15,4 +15,9 @@ urlpatterns = [
     path('grade_view/', views.grade_view, name='grade_view'),
     path('attendance_plan/', views.attendance_plan, name='attendance_plan'),
     path('register/', views.register_student, name='register_student'),
+    path('register/class_count/', views.class_count_register, name='class_count_register'), #授業回数登録
+    path('register/attendance/', views.attendance_register, name='attendance_register'),    #出席回数登録
+    path('register/grade/', views.grade_register, name='grade_register'),                   #成績登録
+    # path("subject/edit/<int:subject_id>/", views.subject_edit, name="subject_edit"),
+    # path("subject/delete/<int:subject_id>/", views.subject_delete, name="subject_delete"),
 ]
