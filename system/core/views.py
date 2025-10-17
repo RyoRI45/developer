@@ -287,65 +287,34 @@ def manage_grades(request):
 @never_cache
 @login_required
 def subject_register(request):
-    print(f"Logged-in user: {request.user}")  # デバッグ用
-    print(f"Is authenticated: {request.user.is_authenticated}")  # 認証状態を確認
+    """科目登録・管理ページ"""
+    student = Student.objects.get(user=request.user)
+    subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
 
-    debug_info = f"ユーザー: {request.user} | 認証状態: {request.user.is_authenticated}"
+    if request.method == "POST":
+        subject_name = request.POST.get("subject_name")
+        subject_class = request.POST.get("subject_class")
+        day_of_week = request.POST.get("day_of_week")
+        table = request.POST.get("table")
+        subject_score = request.POST.get("subject_score", 1)
 
-    grades = range(1, 6)  # 成績の選択肢（1〜5）
-
-    if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        grade = request.POST.get('grade')
-        #date = request.POST.get('date')
-        table = request.POST.get('table')
-        day_of_week = request.POST.get('day_of_week')  # ← 追加
-        lesson_count = request.POST.get('lesson_count')
-        attend_days = request.POST.get('attend_days')
-
-        # 入力チェック
-        if not all([name, grade, table, lesson_count, attend_days]):
-            return render(request, 'core/subject_register.html', {
-                'grades': grades,
-                'error': '全ての項目を入力してください。',
-                'debug_info': debug_info
-            })
-
-        try:
-            # Student オブジェクトの取得または作成
-            # student, created = Student.objects.get_or_create(student_name=request.user.username)
-            # print(f"Student作成: {created}")  # デバッグ用
-            # debug_info += f" | Student作成: {created}"
-            student, created = Student.objects.get_or_create(user=request.user)
-            debug_info += f" | Student取得または作成: {'新規作成' if created else '既存'}"
-
-            # Subject オブジェクトを作成
+        if not subject_name:
+            messages.error(request, "科目名を入力してください。")
+        else:
             Subject.objects.create(
                 student=student,
-                subject_name=name,
-                day_of_week=day_of_week,  # ← 追加
-                subject_score=int(grade),
-                # date=date,
+                subject_name=subject_name,
+                subject_class=subject_class,
+                day_of_week=day_of_week,
                 table=table,
-                # lesson_count=int(lesson_count),
-                # attend_days=int(attend_days)
-                lesson_count=int(request.POST.get('lesson_count', 0)),
-                attend_days=int(request.POST.get('attend_days', 0))
+                subject_score=subject_score
             )
+            messages.success(request, f"{subject_name} を登録しました。")
+            return redirect("core:subject_register")
 
-            return redirect('core:student_home')  # 成功時にリダイレクト
-
-        except Exception as e:
-            debug_info += f" | エラー: {str(e)}"
-            print(f"エラー: {str(e)}")
-            return render(request, 'core/subject_register.html', {
-                'grades': grades,
-                'error': '登録中にエラーが発生しました。',
-                'debug_info': debug_info
-            })
-
-    # GETリクエスト時
-    return render(request, 'core/subject_register.html', {'grades': grades, 'debug_info': debug_info})
+    return render(request, "core/subject_register.html", {
+        "subjects": subjects,
+    })
 
 def calculate_gpa(student_id):
     # 学生の全ての成績を取得
@@ -602,3 +571,14 @@ def grade_register(request):
         "grade_range": grade_range,
     })
 
+@login_required
+def subject_delete(request, subject_id):
+    student = Student.objects.get(user=request.user)
+    subject = get_object_or_404(Subject, pk=subject_id, student=student)
+
+    if request.method == "POST":
+        subject_name = subject.subject_name
+        subject.delete()
+        messages.success(request, f"{subject_name} を削除しました。")
+
+    return redirect("core:subject_register")

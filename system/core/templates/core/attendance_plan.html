@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-
 {% block content %}
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">出席計画・状況</h1>
-    <!-- ナビゲーションバー -->
+    <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
@@ -21,59 +19,72 @@
     </nav>
 </header>
 
-<div class="content-container">
-    <h2>出席状況</h2>
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>科目名</th>
-                <th>授業回数</th>
-                <th>出席日数</th>
-                <th>出席率</th>
-                <th>状況</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in attendance_data %}
-                <tr class="{% if data.status == '危険' %}danger-row{% elif data.status == '注意' %}warning-row{% endif %}">
-                    <td>{{ data.subject_name }}</td>
-                    <td>{{ data.lesson_count }}</td>
-                    <td>{{ data.attend_days }}</td>
-                    <td>{{ data.attendance_rate|floatformat:2 }}%</td>
-                    <td>{{ data.status }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2 style="margin-top: 40px;">時間割</h2>
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th></th>
-                {% for day in days %}
-                    <th>{{ day|slice:":1" }}</th>  <!-- 「月曜日」→「月」のように表示 -->
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for period in periods %}
+<div style="padding:40px;display:flex;flex-direction:column;align-items:center;">
+    <div style="background:white;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:1000px;text-align:center;">
+        <h2>出席状況</h2>
+        <table style="width:100%;border-collapse:collapse;margin-top:15px;text-align:center;">
+            <thead style="background-color:#f2f2f2;">
                 <tr>
-                    <td>{{ period }}</td>
+                    <th>科目名</th>
+                    <th>授業回数</th>
+                    <th>出席日数</th>
+                    <th>出席率</th>
+                    <th>状況</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in attendance_data %}
+                    <tr class="{% if data.status == '危険' %}danger-row{% elif data.status == '注意' %}warning-row{% endif %}">
+                        <td style="border:1px solid #ddd;padding:8px;">{{ data.subject_name }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ data.lesson_count }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ data.attend_days }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ data.attendance_rate|floatformat:2 }}%</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ data.status }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">登録データがありません。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background:white;margin-top:40px;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:1000px;text-align:center;">
+        <h2>時間割</h2>
+        <table style="width:100%;border-collapse:collapse;margin-top:15px;text-align:center;">
+            <thead style="background-color:#f2f2f2;">
+                <tr>
+                    <th></th>
                     {% for day in days %}
-                        {% with timetable|dict_get:period as day_table %}
-                            <td>
-                                {% if day_table|dict_get:day %}
-                                    {{ day_table|dict_get:day }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}
-                            </td>
-                        {% endwith %}
+                        <th>{{ day|slice:":1" }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for period in periods %}
+                    <tr>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ period }}</td>
+                        {% for day in days %}
+                            {% with timetable|dict_get:period as day_table %}
+                                <td style="border:1px solid #ddd;padding:8px;">
+                                    {% if day_table|dict_get:day %}
+                                        {{ day_table|dict_get:day }}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
+                            {% endwith %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 戻るボタン -->
+    <div style="margin-top:40px;">
+        <form method="GET" action="{% url 'core:student_home' %}">
+            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;">← ホームに戻る</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

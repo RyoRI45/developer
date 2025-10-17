@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">科目登録・管理</h1>
+    <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
@@ -20,23 +18,56 @@
     </nav>
 </header>
 
-<div style="padding: 40px;">
+<div style="padding:40px;display:flex;flex-direction:column;align-items:center;">
+    <!-- 科目登録フォーム -->
+    <div style="background:white;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:800px;text-align:center;">
+        <h2>新規科目登録</h2>
 
-    <!-- 新規科目登録 -->
-    <h2>新規科目登録</h2>
-    <form method="POST" action="{% url 'core:subject_register' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">登録</button>
-    </form>
+        <form method="POST" action="{% url 'core:subject_register' %}" style="margin-top:20px;">
+            {% csrf_token %}
+            <label>科目名：</label><br>
+            <input type="text" name="subject_name" class="form-control" style="width:60%;margin:10px auto;" required><br>
 
-    <hr style="margin: 40px 0;">
+            <label>区分：</label><br>
+            <select name="subject_class" class="form-control" style="width:60%;margin:10px auto;">
+                <option value="必修">必修</option>
+                <option value="教養">教養</option>
+                <option value="専門">専門</option>
+            </select><br>
 
-    <!-- 登録済み科目一覧 -->
-    <h2>登録済み科目一覧</h2>
-    {% if subjects %}
-        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: center;">
-            <thead style="background-color: #f2f2f2;">
+            <label>曜日：</label><br>
+            <select name="day_of_week" class="form-control" style="width:60%;margin:10px auto;">
+                <option value="月">月曜日</option>
+                <option value="火">火曜日</option>
+                <option value="水">水曜日</option>
+                <option value="木">木曜日</option>
+                <option value="金">金曜日</option>
+            </select><br>
+
+            <label>時限：</label><br>
+            <select name="table" class="form-control" style="width:60%;margin:10px auto;">
+                <option value="1限目">1限目</option>
+                <option value="2限目">2限目</option>
+                <option value="3限目">3限目</option>
+                <option value="4限目">4限目</option>
+            </select><br>
+
+            <label>単位数：</label><br>
+            <select name="subject_score" class="form-control" style="width:60%;margin:10px auto;">
+                {% for i in "12345" %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select><br>
+
+            <button type="submit" class="btn btn-primary" style="width:60%;">登録</button>
+        </form>
+    </div>
+
+    <!-- 登録済み一覧 -->
+    <div style="background:white;margin-top:40px;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:800px;text-align:center;">
+        <h2>登録済み科目一覧</h2>
+        <table style="width:100%;border-collapse:collapse;margin-top:15px;text-align:center;">
+            <thead style="background-color:#f2f2f2;">
                 <tr>
                     <th>曜日</th>
                     <th>時限</th>
@@ -48,27 +79,31 @@
             </thead>
             <tbody>
                 {% for subject in subjects %}
-                <tr>
-                    <td>{{ subject.day_of_week }}</td>
-                    <td>{{ subject.table }}</td>
-                    <td>{{ subject.subject_name }}</td>
-                    <td>{{ subject.subject_class }}</td>
-                    <td>{{ subject.subject_score }}</td>
-                    <td>
-                        <!-- 編集 -->
-                        <a href="{% url 'core:subject_edit' subject.subject_id %}" class="btn btn-warning btn-sm">編集</a>
-                        <!-- 削除 -->
-                        <form method="POST" action="{% url 'core:subject_delete' subject.subject_id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に削除しますか？');">削除</button>
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.day_of_week }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.table }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.subject_name }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.subject_class }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.subject_score }}</td>
+                        <td style="border:1px solid #ddd;padding:8px;">
+                            <form method="POST" action="{% url 'core:subject_delete' subject.subject_id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に削除しますか？');">削除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">登録済みの科目はありません。</td></tr>
                 {% endfor %}
             </tbody>
         </table>
-    {% else %}
-        <p>登録済みの科目はありません。</p>
-    {% endif %}
+    </div>
+
+    <!-- 戻るボタン -->
+    <div style="margin-top:40px;">
+        <form method="GET" action="{% url 'core:manage_grades' %}">
+            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;">← 成績管理に戻る</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
