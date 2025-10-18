@@ -19,6 +19,7 @@ urlpatterns = [
     path('register/attendance/', views.attendance_register, name='attendance_register'),    #出席回数登録
     path('register/grade/', views.grade_register, name='grade_register'),                   #成績登録
     path('subject_delete/<int:subject_id>/', views.subject_delete, name='subject_delete'),  # ← これを追加
+    path('manual/', views.manual, name='manual'),
     # path("subject/edit/<int:subject_id>/", views.subject_edit, name="subject_edit"),
     # path("subject/delete/<int:subject_id>/", views.subject_delete, name="subject_delete"),
 ]

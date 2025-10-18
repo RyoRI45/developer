@@ -100,6 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 10},  # ← 最低10文字
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

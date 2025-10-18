@@ -10,6 +10,7 @@
             <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
             <li><a href="{% url 'core:attendance_plan' %}" style="text-decoration: none; color: white; font-weight: bold;">出席計画</a></li>
+            <li><a href="{% url 'core:manual' %}" style="text-decoration: none; color: white; font-weight: bold;">使い方</a></li>
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
@@ -37,8 +38,12 @@
         <form method="GET" action="{% url 'core:grade_register' %}">
             <button type="submit" class="btn btn-primary" style="width: 100%;">成績登録</button>
         </form>
-        <form method="GET" action="{% url 'core:grade_view' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">成績閲覧</button>
+    </div>
+
+    <!-- ✅ 戻るボタン -->
+    <div style="margin-top: 40px;">
+        <form method="GET" action="{% url 'core:student_home' %}">
+            <button type="submit" class="btn btn-secondary">ホームへ戻る</button>
         </form>
     </div>
 </div>

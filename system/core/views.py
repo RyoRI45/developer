@@ -15,6 +15,8 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 # from .forms import ClassCountForm  # フォームを作っておく想定
 
 # Create your views here.
@@ -51,6 +53,7 @@ def home(request):
 
 #     return render(request, 'core/register_student.html')
 # アカウント作成
+
 def register_student(request):
     register_error = None
 
@@ -58,13 +61,23 @@ def register_student(request):
         student_name = request.POST.get('student_name')
         password = request.POST.get('password')
 
+        # ユーザー名重複チェック
         if User.objects.filter(username=student_name).exists():
             register_error = "この名前はすでに使われています"
         else:
-            user = User.objects.create_user(username=student_name, password=password)
-            Student.objects.create(user=user)  # Student オブジェクトを作成
-            login(request, user)  # 登録後に自動ログイン
-            return redirect('core:grade_view')  # 成績ページへリダイレクト
+            try:
+                # ✅ パスワードバリデーション実行
+                validate_password(password)
+
+                # 問題なければユーザー作成
+                user = User.objects.create_user(username=student_name, password=password)
+                Student.objects.create(user=user)
+                login(request, user)
+                return redirect('core:grade_view')
+
+            except ValidationError as e:
+                # ❌ 弱いパスワードならエラーメッセージを表示
+                register_error = "パスワードエラー：" + " ".join(e.messages)
 
     return render(request, 'core/login.html', {'register_error': register_error})
 
@@ -582,3 +595,6 @@ def subject_delete(request, subject_id):
         messages.success(request, f"{subject_name} を削除しました。")
 
     return redirect("core:subject_register")
+
+def manual(request):
+    return render(request, "core/manual.html")
