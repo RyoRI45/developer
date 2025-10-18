@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<header style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background-color:#28a745;color:white;">
+    <h1 style="margin:0;font-size:1.5rem;">使い方ガイド</h1>
+    <nav>
+        <ul style="list-style:none;display:flex;gap:15px;margin:0;padding:0;">
+            <li><a href="{% url 'core:student_home' %}" style="color:white;font-weight:bold;">ホーム</a></li>
+            <li><a href="{% url 'core:grade_view' %}" style="color:white;font-weight:bold;">成績閲覧</a></li>
+            <li><a href="{% url 'core:manage_grades' %}" style="color:white;font-weight:bold;">成績管理</a></li>
+            <li><a href="{% url 'core:attendance_plan' %}" style="color:white;font-weight:bold;">出席計画</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div style="padding:40px;display:flex;flex-direction:column;align-items:center;">
+    <div style="background:white;padding:30px 50px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:900px;">
+        <h2 style="text-align:center;margin-bottom:20px;">📘 学習管理システムの使い方</h2>
+
+        <p>このシステムでは、学生自身が科目情報・授業回数・出席回数・成績を登録・確認できます。</p>
+
+        <hr style="margin:25px 0;">
+
+        <h3>① ホーム画面</h3>
+        <p>ログイン後に最初に表示される画面です。自分の名前と履修科目が表示されます。<br>
+        上部メニューから各ページに移動できます。</p>
+
+        <h3>② 科目登録</h3>
+        <p>「成績管理」→「科目登録」からアクセスできます。<br>
+        科目名・曜日・時限・区分・単位数を入力して登録します。<br>
+        登録済みの科目は下部の一覧で確認・削除できます。</p>
+
+        <h3>③ 授業回数登録</h3>
+        <p>登録した科目ごとに、授業の実施回数を入力します。<br>
+        1〜15回の範囲で設定可能です。<br>
+        出席回数より少ない授業回数は登録できません。</p>
+
+        <h3>④ 出席回数登録</h3>
+        <p>授業に出席した回数を入力します。<br>
+        授業回数を超える数値は登録できません。</p>
+
+        <h3>⑤ 成績登録</h3>
+        <p>各科目の成績（1〜5）を登録します。<br>
+        こちらも学生本人が入力する形式です。</p>
+
+        <h3>⑥ 成績閲覧</h3>
+        <p>登録した成績を一覧で確認できます。<br>
+        各科目の平均や成績分布を今後追加予定です。</p>
+
+        <h3>⑦ 出席計画</h3>
+        <p>登録した授業回数・出席日数をもとに出席率を自動計算します。<br>
+        出席率が低下している科目は「注意」「危険」と色分け表示されます。</p>
+
+        <hr style="margin:25px 0;">
+
+        <h3>📢 注意事項</h3>
+        <ul style="margin-left:20px;">
+            <li>入力ミスを防ぐため、登録内容は定期的に確認してください。</li>
+            <li>「授業回数」と「出席回数」は整合性が取れていない場合、登録時にエラーが出ます。</li>
+            <li>登録内容を削除したい場合は、一覧表の削除ボタンを使用してください。</li>
+        </ul>
+
+        <h3>📞 サポート</h3>
+        <p>操作方法に不明点がある場合は、担当教員または管理者までお問い合わせください。</p>
+    </div>
+
+    <!-- 戻るボタン -->
+    <div style="margin-top:40px;">
+        <form method="GET" action="{% url 'core:student_home' %}">
+            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;">← ホームに戻る</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
