@@ -17,6 +17,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+import re  # ← 追加：正規表現を使うため
 # from .forms import ClassCountForm  # フォームを作っておく想定
 
 # Create your views here.
@@ -65,21 +66,26 @@ def register_student(request):
         if User.objects.filter(username=student_name).exists():
             register_error = "この名前はすでに使われています"
         else:
-            try:
-                # ✅ パスワードバリデーション実行
-                validate_password(password)
+            user = User.objects.create_user(username=student_name, password=password)
+            Student.objects.create(user=user, student_name=student_name)  # ←ここで登録！
+            login(request, user)
+            return redirect('core:student_home')
+        
+        # パスワード強度チェック（英字＋数字を含み、8文字以上）
+        if len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'\d', password):
+            register_error = "パスワードは8文字以上で、英字と数字を含めてください。"
 
-                # 問題なければユーザー作成
-                user = User.objects.create_user(username=student_name, password=password)
-                Student.objects.create(user=user)
-                login(request, user)
-                return redirect('core:grade_view')
+        elif User.objects.filter(username=student_name).exists():
+            register_error = "この名前はすでに使われています。"
 
-            except ValidationError as e:
-                # ❌ 弱いパスワードならエラーメッセージを表示
-                register_error = "パスワードエラー：" + " ".join(e.messages)
+        else:
+            user = User.objects.create_user(username=student_name, password=password)
+            Student.objects.create(user=user)
+            login(request, user)
+            return redirect('core:grade_view')
 
     return render(request, 'core/login.html', {'register_error': register_error})
+
 
 # def login_view(request):
 #     if request.method == 'POST':
@@ -277,20 +283,32 @@ def get_today():
 
 @login_required
 def student_home(request):
-    # ログインしているユーザーに対応するStudentを取得
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        student = None  # 念のためエラー回避
-    
-    # 本日の履修科目を取ってくる例（必要に応じてロジック調整）
-    today_subjects = Subject.objects.filter(student=student)
+    # 学生情報取得
+    student = Student.objects.get(user=request.user)
 
-    context = {
-        "student": student,
-        "today_subjects": today_subjects,
+    # 今日の曜日(英語 → 日本語1文字に変換)
+    weekday_eng = datetime.now().strftime('%a')  # Mon, Tue, Wed...
+    weekday_map = {
+        'Mon': '月',
+        'Tue': '火',
+        'Wed': '水',
+        'Thu': '木',
+        'Fri': '金',
+        'Sat': '土',
+        'Sun': '日',
     }
-    return render(request, "core/student_home.html", context)
+    today_jp = weekday_map.get(weekday_eng)
+
+    # 今日の科目を取得
+    subjects_today = Subject.objects.filter(student=student, day_of_week=today_jp)
+
+    return render(request, "core/student_home.html", {
+        "student": student,
+        "today": today_jp,
+        "today_subjects": subjects_today,
+    })
+
+
 
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得

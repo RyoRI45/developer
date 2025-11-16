@@ -1,28 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Learning Support{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'core/style.css' %}">
-</head>
-<body>
-    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-        <!-- 左側: サイトタイトル -->
-        <h1 style="margin: 0; font-size: 1.5rem;">Learning Support</h1>
-    
-    </header>
-    
+{% extends 'base.html' %}
+{% block content %}
 
-    <div class="container">
-        {% block content %}
-        <!-- 各ページの内容 -->
-        {% endblock %}
-    </div>
+<!-- ようこそ -->
+<div style="text-align:center; margin-top:30px;">
+    <h2>ようこそ、{{ student.user.username }} さん</h2>
+</div>
 
-    <footer>
-        <p>&copy; 2024 Learning Support</p>
-    </footer>
-</body>
-</html>
+<!-- 本日の履修科目 -->
+<div style="padding:40px;">
+    <h3 style="text-align:center;">本日の履修科目（{{ today }}曜日）</h3>
+
+    {% if subjects_today %}
+        <table class="styled-table" style="margin: 20px auto; width: 80%; text-align:center;">
+            <thead>
+                <tr>
+                    <th>時限</th>
+                    <th>科目名</th>
+                    <th>区分</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects_today %}
+                <tr>
+                    <td>{{ subject.table }}</td>
+                    <td>{{ subject.subject_name }}</td>
+                    <td>{{ subject.subject_class }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align:center;">本日の授業はありません。</p>
+    {% endif %}
+</div>
+
+{% endblock %}

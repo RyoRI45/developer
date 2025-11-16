@@ -1,28 +1,27 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Learning Support{% endblock %}</title>
-    {% load static %}
+    <title>Learning Support</title>
     <link rel="stylesheet" href="{% static 'core/style.css' %}">
 </head>
 <body>
-    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-        <!-- 左側: サイトタイトル -->
-        <h1 style="margin: 0; font-size: 1.5rem;">Learning Support</h1>
-    
-        <!-- 右側: ナビゲーションバー -->
+    <!-- ヘッダー -->
+    <header style="background-color: #28a745; color: white; padding: 15px 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 1.8rem;">Learning Support</h1>
     </header>
 
-    <div class="container">
+    <!-- コンテンツ -->
+    <main>
         {% block content %}
-        <!-- 各ページの内容 -->
         {% endblock %}
-    </div>
+    </main>
 
-    <footer>
-        <p>&copy; 2024 Learning Support</p>
+    <!-- フッター -->
+    <footer style="background-color: #f8f9fa; text-align: center; padding: 10px; margin-top: 40px;">
+        <p style="margin: 0;">© 2024 Learning Support</p>
     </footer>
 </body>
 </html>

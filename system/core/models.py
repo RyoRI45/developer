@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_id = models.AutoField(primary_key=True)  # max_length は削除！
-    student_name = models.CharField(max_length=50)
+    student_name = models.CharField(max_length=50, default="未設定") # ←追加
     password = models.CharField(max_length=50)
 
     def __str__(self):

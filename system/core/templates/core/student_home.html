@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-
 {% block content %}
+
 <!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">ようこそ、{{ student.student_name }}さん</h1>
+    <h1 style="margin: 0; font-size: 1.5rem;">ようこそ、{{ student.user.username }}さん</h1>
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
@@ -21,18 +21,36 @@
     </nav>
 </header>
 
-<!-- メインコンテンツ -->
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px;">
-    <h2 style="text-align: center;">学習管理をお手伝いします。</h2>
-    {% if today_subjects %}
-    <p>本日の履修科目は 
-        {% for subject in today_subjects %}
-            {{ subject.subject_name }}{% if not forloop.last %}、{% endif %}
-        {% endfor %}
-        です。
-    </p>
+<!-- ようこそ -->
+<!-- <div style="text-align:center; margin-top:30px;">
+    <h2>ようこそ、{{ student.user.username }} さん</h2>
+</div> -->
+
+<!-- 本日の履修科目 -->
+<div style="padding:40px;">
+    <h3 style="text-align:center;">本日の履修科目（{{ today }}曜日）</h3>
+
+    {% if subjects_today %}
+        <table class="styled-table" style="margin: 20px auto; width: 80%; text-align:center;">
+            <thead>
+                <tr>
+                    <th>時限</th>
+                    <th>科目名</th>
+                    <th>区分</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects_today %}
+                <tr>
+                    <td>{{ subject.table }}</td>
+                    <td>{{ subject.subject_name }}</td>
+                    <td>{{ subject.subject_class }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>本日の履修科目は登録されていません。</p>
+        <p style="text-align:center;">本日の授業はありません。</p>
     {% endif %}
 
     <!-- ✅ 成績閲覧ボタン追加 -->
@@ -55,4 +73,10 @@
         </form>
     </div>
 </div>
+
+<!-- フッター -->
+<footer style="background-color:#28a745; color:white; text-align:center; padding:10px 0;">
+    © 2024 Learning Support
+</footer>
+
 {% endblock %}
