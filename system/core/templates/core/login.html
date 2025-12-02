@@ -2,41 +2,54 @@
 
 {% block content %}
 <!-- ヘッダー -->
-<header style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
+<header style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; background-color: #28a745; color: white; font-size: 20px;">
     <nav>
         <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
-            <li><a href="{% url 'core:home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
+            <li>
+                <a href="{% url 'core:home' %}" style="text-decoration: none; color: white; font-weight: bold; font-size: 20px;">
+                    ホーム
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 
 <!-- ログイン・アカウント作成フォーム -->
-<div style="padding: 20px; max-width: 400px; margin: 40px auto; text-align: center;">
+<div style="padding: 20px; max-width: 400px; margin: 40px auto; text-align: center; font-size: 18px;">
+    
     {% if error %}
-        <p class="error" style="color: red;">{{ error }}</p>
+        <p class="error" style="color: red; font-size: 18px;">{{ error }}</p>
     {% endif %}
     {% if register_error %}
-        <p class="error" style="color: red;">{{ register_error }}</p>
+        <p class="error" style="color: red; font-size: 18px;">{{ register_error }}</p>
     {% endif %}
 
     <form method="post" action="{% url 'core:login' %}">
         {% csrf_token %}
         
-        <div style="margin-bottom: 15px;">
-            <label for="student_name">名前:</label><br>
-            <input type="text" id="student_name" name="student_name" required>
+        <div style="margin-bottom: 20px;">
+            <label for="student_name" style="font-size: 18px;">名前:</label><br>
+            <input type="text" id="student_name" name="student_name" required
+                   style="font-size: 18px; padding: 5px; width: 90%;">
         </div>
-        <div style="margin-bottom: 15px;">
-            <label for="password">パスワード:</label><br>
-            <input type="password" id="password" name="password" required>
+
+        <div style="margin-bottom: 20px;">
+            <label for="password" style="font-size: 18px;">パスワード:</label><br>
+            <input type="password" id="password" name="password" required
+                   style="font-size: 18px; padding: 5px; width: 90%;">
         </div>
 
         <!-- ボタン -->
         <div>
-            <button type="submit" name="login" style="margin-right: 10px;">ログイン</button>
-            <button type="submit" name="register">アカウント作成</button>
+            <button type="submit" name="login" 
+                    style="margin-right: 10px; font-size: 18px; padding: 5px 10px;">
+                ログイン
+            </button>
+            <button type="submit" name="register"
+                    style="font-size: 18px; padding: 5px 10px;">
+                アカウント作成
+            </button>
         </div>
     </form>
 </div>
 {% endblock %}
-

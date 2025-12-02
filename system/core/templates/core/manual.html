@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
+
+<!-- 全体フォント設定 -->
+<style>
+    body {
+        font-size: 18px;
+        line-height: 1.8;
+    }
+    h1 { font-size: 26px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 20px; margin-top: 20px; }
+    p, li { font-size: 18px; }
+</style>
+
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background-color: #28a745; color: white;">
+    <h1 style="margin: 0;">成績管理</h1>
     <nav>
-        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+        <ul style="list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; font-size: 18px;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
             <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
@@ -19,13 +32,13 @@
     </nav>
 </header>
 
-<div style="padding:40px;display:flex;flex-direction:column;align-items:center;">
-    <div style="background:white;padding:30px 50px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:900px;">
-        <h2 style="text-align:center;margin-bottom:20px;">📘 学習管理システムの使い方</h2>
+<div style="padding: 50px; display: flex; flex-direction: column; align-items: center;">
+    <div style="background: white; padding: 40px 60px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 95%; max-width: 900px;">
+        <h2 style="text-align: center; margin-bottom: 25px;">📘 学習管理システムの使い方</h2>
 
         <p>このシステムでは、学生自身が科目情報・授業回数・出席回数・成績を登録・確認できます。</p>
 
-        <hr style="margin:25px 0;">
+        <hr style="margin: 30px 0;">
 
         <h3>① ホーム画面</h3>
         <p>ログイン後に最初に表示される画面です。自分の名前と履修科目が表示されます。<br>
@@ -51,30 +64,30 @@
 
         <h3>⑥ 成績閲覧</h3>
         <p>登録した成績を一覧で確認できます。<br>
-        各科目の平均や成績分布を今後追加予定です。</p>
+        今後は平均やグラフも追加予定です。</p>
 
         <h3>⑦ 出席計画</h3>
-        <p>登録した授業回数・出席日数をもとに出席率を自動計算します。<br>
-        出席率が低下している科目は「注意」「危険」と色分け表示されます。</p>
+        <p>登録した授業回数・出席回数から出席率を自動計算します。<br>
+        色分けで注意度が確認できます。</p>
 
-        <hr style="margin:25px 0;">
+        <hr style="margin: 30px 0;">
 
         <h3>📢 注意事項</h3>
-        <ul style="margin-left:20px;">
+        <ul style="margin-left: 25px;">
             <li>入力ミスを防ぐため、登録内容は定期的に確認してください。</li>
-            <li>「授業回数」と「出席回数」は整合性が取れていない場合、登録時にエラーが出ます。</li>
-            <li>登録内容を削除したい場合は、一覧表の削除ボタンを使用してください。</li>
+            <li>授業回数と出席回数に矛盾がある場合はエラーとなります。</li>
+            <li>削除したい場合は一覧の削除ボタンを使用してください。</li>
         </ul>
 
         <h3>📞 サポート</h3>
-        <p>操作方法に不明点がある場合は、担当教員または管理者までお問い合わせください。</p>
+        <p>不明点がある場合は担当教員または管理者へお問い合わせください。</p>
     </div>
 
-    <!-- 戻るボタン -->
-    <div style="margin-top:40px;">
+    <div style="margin-top: 40px;">
         <form method="GET" action="{% url 'core:student_home' %}">
-            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;">← ホームに戻る</button>
+            <button type="submit" class="btn btn-secondary" style="padding: 12px 35px; font-size: 18px;">← ホームに戻る</button>
         </form>
     </div>
 </div>
+
 {% endblock %}

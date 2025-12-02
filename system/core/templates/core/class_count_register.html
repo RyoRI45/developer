@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">学習管理システム</h1>
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white; font-size:1.2rem;">
+    <h1 style="margin: 0; font-size: 1.8rem;">学習管理システム</h1>
     <nav>
-        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0; font-size:1.2rem;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
             <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
@@ -12,61 +12,65 @@
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size:1.1rem;">ログアウト</button>
                 </form>
             </li>
         </ul>
     </nav>
 </header>
 
-<div style="padding:40px;display:flex;flex-direction:column;align-items:center;">
+<div style="padding:40px;display:flex;flex-direction:column;align-items:center;font-size:1.1rem;">
     <div style="background:white;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:800px;text-align:center;">
-        <h2>授業回数を登録</h2>
+        <h2 style="font-size:1.6rem;">授業回数を登録</h2>
+
         <form method="POST" action="{% url 'core:class_count_register' %}" style="margin-top:20px;">
             {% csrf_token %}
-            <label>科目：</label><br>
-            <select name="subject_id" class="form-control" style="width:60%;margin:10px auto;">
+            <label style="font-size:1.2rem;">科目：</label><br>
+            <select name="subject_id" class="form-control" style="width:60%;margin:10px auto;font-size:1.1rem;padding:5px;">
                 {% for subject in subjects %}
                     <option value="{{ subject.subject_id }}">{{ subject.subject_name }}</option>
                 {% endfor %}
             </select><br>
-            <label>授業回数：</label><br>
-            <select name="lesson_count" class="form-control" style="width:60%;margin:10px auto;">
+
+            <label style="font-size:1.2rem;">授業回数：</label><br>
+            <select name="lesson_count" class="form-control" style="width:60%;margin:10px auto;font-size:1.1rem;padding:5px;">
                 {% for i in lesson_range %}
                     <option value="{{ i }}">{{ i }}</option>
                 {% endfor %}
             </select><br>
-            <button type="submit" class="btn btn-primary" style="width:60%;">登録</button>
+
+            <button type="submit" class="btn btn-primary" style="width:60%;font-size:1.2rem;padding:10px 0;">登録</button>
         </form>
     </div>
 
-    <!-- 登録済み科目一覧 -->
+    <!-- 登録済み一覧 -->
     <div style="background:white;margin-top:40px;padding:30px 40px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:800px;text-align:center;">
-        <h2>登録済み科目一覧</h2>
-        <table style="width:100%;border-collapse:collapse;margin-top:15px;text-align:center;">
+        <h2 style="font-size:1.6rem;">登録済み科目一覧</h2>
+
+        <table style="width:100%;border-collapse:collapse;margin-top:15px;text-align:center;font-size:1.1rem;">
             <thead style="background-color:#f2f2f2;">
                 <tr>
-                    <th>科目名</th>
-                    <th>授業回数</th>
+                    <th style="padding:10px;border:1px solid #ddd;">科目名</th>
+                    <th style="padding:10px;border:1px solid #ddd;">授業回数</th>
                 </tr>
             </thead>
             <tbody>
                 {% for subject in subjects %}
                     <tr>
-                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.subject_name }}</td>
-                        <td style="border:1px solid #ddd;padding:8px;">{{ subject.lesson_count }}</td>
+                        <td style="border:1px solid #ddd;padding:10px;">{{ subject.subject_name }}</td>
+                        <td style="border:1px solid #ddd;padding:10px;">{{ subject.lesson_count }}</td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="2">登録されていません。</td></tr>
+                    <tr><td colspan="2" style="padding:10px;">登録されていません。</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <!-- 戻る -->
+    <!-- 戻るボタン -->
     <div style="margin-top:40px;">
         <form method="GET" action="{% url 'core:manage_grades' %}">
-            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;">← 成績管理に戻る</button>
+            <button type="submit" class="btn btn-secondary" style="padding:10px 30px;font-size:1.2rem;">← 成績管理に戻る</button>
         </form>
     </div>
 </div>

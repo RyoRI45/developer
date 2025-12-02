@@ -308,12 +308,24 @@ def student_home(request):
         "today_subjects": subjects_today,
     })
 
-
-
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得
     print(f"Manage grades page accessed from host: {host}")  # ログにホスト名を出力
     return render(request, 'core/manage_grades.html')
+
+# def manage_grades(request):
+#     student_name = request.session.get("student_name")
+#     if not student_name:
+#         return redirect("core:login")
+
+#     subjects = Subject.objects.filter(student_name=student_name)
+
+#     grade_range = range(1, 6)  # ★ 追加！
+
+#     return render(request, "core/manage_grades.html", {
+#         "subjects": subjects,
+#         "grade_range": grade_range,
+#     })
 
 @never_cache
 @login_required

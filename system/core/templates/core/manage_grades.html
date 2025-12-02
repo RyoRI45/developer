@@ -2,10 +2,10 @@
 
 {% block content %}
 <!-- ヘッダー -->
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #28a745; color: white;">
-    <h1 style="margin: 0; font-size: 1.5rem;">成績管理</h1>
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 25px; background-color: #28a745; color: white; font-size: 1.1rem;">
+    <h1 style="margin: 0; font-size: 1.8rem;">成績管理</h1>
     <nav>
-        <ul style="list-style: none; display: flex; gap: 15px; margin: 0; padding: 0;">
+        <ul style="list-style: none; display: flex; gap: 18px; margin: 0; padding: 0; font-size: 1.1rem;">
             <li><a href="{% url 'core:student_home' %}" style="text-decoration: none; color: white; font-weight: bold;">ホーム</a></li>
             <li><a href="{% url 'core:grade_view' %}" style="text-decoration: none; color: white; font-weight: bold;">成績閲覧</a></li>
             <li><a href="{% url 'core:manage_grades' %}" style="text-decoration: none; color: white; font-weight: bold;">成績管理</a></li>
@@ -14,7 +14,7 @@
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;">ログアウト</button>
                 </form>
             </li>
         </ul>
@@ -22,28 +22,28 @@
 </header>
 
 <!-- メインコンテンツ -->
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px;">
-    <h2 style="text-align: center;">成績関連の操作を選択してください</h2>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 70px 25px; font-size: 1.1rem;">
+    <h2 style="text-align: center; font-size: 1.6rem;">成績関連の操作を選択してください</h2>
 
-    <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; width: 250px;">
+    <div style="margin-top: 35px; display: flex; flex-direction: column; gap: 20px; width: 280px; font-size: 1.1rem;">
         <form method="GET" action="{% url 'core:subject_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">科目登録</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">科目登録</button>
         </form>
         <form method="GET" action="{% url 'core:class_count_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">授業回数登録</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">授業回数登録</button>
         </form>
         <form method="GET" action="{% url 'core:attendance_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">出席回数登録</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">出席回数登録</button>
         </form>
         <form method="GET" action="{% url 'core:grade_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">成績登録</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">成績登録</button>
         </form>
     </div>
 
-    <!-- ✅ 戻るボタン -->
-    <div style="margin-top: 40px;">
+    <!-- 戻るボタン -->
+    <div style="margin-top: 50px;">
         <form method="GET" action="{% url 'core:student_home' %}">
-            <button type="submit" class="btn btn-secondary">←ホームへ戻る</button>
+            <button type="submit" class="btn btn-secondary" style="font-size: 1.1rem; padding: 10px 25px;">← ホームへ戻る</button>
         </form>
     </div>
 </div>
