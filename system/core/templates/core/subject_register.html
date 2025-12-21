@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if messages %}
+<div style="width:90%;max-width:800px;margin-top:20px;">
+    {% for message in messages %}
+        <div style="
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            {% if message.tags == 'success' %}
+                background-color: #d4edda; color: #155724;
+            {% elif message.tags == 'error' %}
+                background-color: #f8d7da; color: #721c24;
+            {% else %}
+                background-color: #cce5ff; color: #004085;
+            {% endif %}
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background-color: #28a745; color: white; font-size:1.2rem;">
     <h1 style="margin: 0; font-size: 1.8rem;">学習管理システム</h1>
     <nav>
@@ -68,7 +89,17 @@
             </select><br>
 
             <button type="submit" class="btn btn-primary" 
-                    style="width:60%;font-size:1.2rem;padding:10px 0;">登録</button>
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">登録</button>
         </form>
     </div>
 
@@ -100,7 +131,17 @@
                             <form method="POST" action="{% url 'core:subject_delete' subject.subject_id %}" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm" 
-                                        style="font-size:1.0rem;padding:8px 12px;"
+                                                      style="
+                                                      padding: 12px 35px;
+                                                      font-size: 1.2rem;
+                                                      background-color: #28a745;
+                                                      color: white;
+                                                      text-decoration: none;
+                                                      border-radius: 5px;
+                                                      font-weight: bold;
+                                                      display: inline-block;
+                                                      margin-top: 30px;
+                                                      "
                                         onclick="return confirm('本当に削除しますか？');">削除</button>
                             </form>
                         </td>
@@ -116,7 +157,17 @@
     <div style="margin-top:50px;">
         <form method="GET" action="{% url 'core:manage_grades' %}">
             <button type="submit" class="btn btn-secondary" 
-                    style="padding:12px 35px;font-size:1.2rem;">← 成績管理に戻る</button>
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">← 成績管理に戻る</button>
         </form>
     </div>
 </div>

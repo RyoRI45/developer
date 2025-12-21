@@ -15,19 +15,22 @@
     <h2 style="font-size:1.6rem;">Welcome to Learning Support</h2>
     <p style="font-size:1.2rem;">あなたの学習をサポートするアプリです。</p>
 
-    <!-- ログインボタン（attendance_register と同じ大きさに調整） -->
+    <!-- ログインボタン（統一デザイン） -->
     <a href="{% url 'core:login' %}"
        style="
-            margin-top: 30px;
-            display: inline-block;
-            padding: 10px 35px;
-            font-size:1.2rem;
-            background-color: #007bff;
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
             color: white;
-            border-radius: 6px;
             text-decoration: none;
-        ">
+            border-radius: 10px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            border: 2px solid black;
+       ">
         ログイン
     </a>
+
 </div>
 {% endblock %}

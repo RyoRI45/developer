@@ -29,9 +29,12 @@
                 <label for="password" style="display: block; font-weight: bold;">パスワード</label>
                 <input type="password" id="password" name="password" required style="width: 100%; padding: 10px; font-size: 1rem;">
             </div>
-            <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 1rem; cursor: pointer;">
-                ログイン
-            </button>
+            <li>
+                <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
+                </form>
+            </li>
         </form>
     </div>
 
@@ -51,7 +54,7 @@
                 <label for="new_password" style="display: block; font-weight: bold;">パスワード</label>
                 <input type="password" id="new_password" name="password" required style="width: 100%; padding: 10px; font-size: 1rem;">
             </div>
-            <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 1rem; cursor: pointer;">
+            <button type="submit" style="background-color:#007bff;color:white;font-size:1.4rem;padding:10px 0;width:60%;border-radius:6px;">
                 登録
             </button>
         </form>

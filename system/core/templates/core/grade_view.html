@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <!-- ヘッダー -->
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background-color: #28a745; color: white; font-size: 18px;">
     <h1 style="margin: 0; font-size: 1.8rem;">成績閲覧</h1>
@@ -13,7 +14,7 @@
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 18px;">ログアウト</button>
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
                 </form>
             </li>
         </ul>
@@ -51,7 +52,18 @@
     <!-- 戻るボタン -->
     <div style="margin-top: 40px; text-align: center;">
         <form method="GET" action="{% url 'core:student_home' %}" style="display: inline-block;">
-            <button type="submit" class="btn btn-secondary" style="padding:12px 35px; font-size: 18px;">← ホームへ戻る</button>
+            <button type="submit" class="btn btn-secondary" 
+                        style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">← ホームへ戻る</button>
         </form>
     </div>
 </div>

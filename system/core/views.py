@@ -17,6 +17,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+import unicodedata
 import re  # ← 追加：正規表現を使うため
 # from .forms import ClassCountForm  # フォームを作っておく想定
 
@@ -62,28 +63,22 @@ def register_student(request):
         student_name = request.POST.get('student_name')
         password = request.POST.get('password')
 
-        # ユーザー名重複チェック
+        # --- ① ユーザー名の重複チェック ---
         if User.objects.filter(username=student_name).exists():
-            register_error = "この名前はすでに使われています"
-        else:
-            user = User.objects.create_user(username=student_name, password=password)
-            Student.objects.create(user=user, student_name=student_name)  # ←ここで登録！
-            login(request, user)
-            return redirect('core:student_home')
-        
-        # パスワード強度チェック（英字＋数字を含み、8文字以上）
-        if len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'\d', password):
-            register_error = "パスワードは8文字以上で、英字と数字を含めてください。"
-
-        elif User.objects.filter(username=student_name).exists():
             register_error = "この名前はすでに使われています。"
 
+        # --- ② パスワード強度チェック（8文字以上＋英字＋数字） ---
+        elif len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'\d', password):
+            register_error = "パスワードは8文字以上で、英字と数字を含めてください。"
+
+        # --- ③ 問題なければ新規登録 ---
         else:
             user = User.objects.create_user(username=student_name, password=password)
-            Student.objects.create(user=user)
+            Student.objects.create(user=user, student_name=student_name)
             login(request, user)
-            return redirect('core:grade_view')
+            return redirect('core:student_home')
 
+    # POSTでエラーがあった場合、またはGETの場合
     return render(request, 'core/login.html', {'register_error': register_error})
 
 
@@ -173,13 +168,15 @@ def login_view(request):
     register_error = None
 
     if request.method == 'POST':
-        student_name = request.POST.get('student_name')
-        password = request.POST.get('password')
+        student_name = request.POST.get('student_name', '').strip()
+        password = request.POST.get('password', '').strip()
 
+        # -------------------
         # ログイン処理
+        # -------------------
         if 'login' in request.POST:
             user = authenticate(request, username=student_name, password=password)
-            if user is not None:
+            if user:
                 login(request, user)
                 try:
                     student = Student.objects.get(user=user)
@@ -192,27 +189,43 @@ def login_view(request):
             else:
                 error = "名前またはパスワードが間違っています"
 
+        # -------------------
         # アカウント作成処理
+        # -------------------
         elif 'register' in request.POST:
-            student_name = request.POST.get('student_name')
-            password = request.POST.get('password')
 
-            if User.objects.filter(username=student_name).exists():
+            # 空白チェック
+            if not student_name or not password:
+                register_error = "名前とパスワードを入力してください"
+
+            # パスワード強度チェック
+            elif (
+                len(password) < 8
+                or not re.search(r'[A-Za-z]', password)
+                or not re.search(r'\d', password)
+            ):
+                register_error = "パスワードは8文字以上で、英字と数字を含めてください"
+
+            # ユーザー名重複チェック
+            elif User.objects.filter(username=student_name).exists():
                 register_error = "この名前はすでに使われています"
+
             else:
                 try:
-                    # Userを作成
-                    user = User.objects.create_user(username=student_name, password=password)
-
-                    # Studentを作成（例外に備える）
-                    student = Student.objects.create(user=user)
-
+                    user = User.objects.create_user(
+                        username=student_name,
+                        password=password
+                    )
+                    student = Student.objects.create(
+                        user=user,
+                        student_name=student_name
+                    )
                     login(request, user)
                     request.session['student_id'] = student.student_id
                     return redirect('core:student_home')
+
                 except IntegrityError:
-                    register_error = "Student の作成に失敗しました（重複エラー）"
-                    user.delete()  # 必要であればUserも削除して巻き戻す
+                    register_error = "アカウント作成に失敗しました"
 
     return render(request, 'core/login.html', {
         'error': error,
@@ -329,35 +342,53 @@ def manage_grades(request):
 
 @never_cache
 @login_required
+@login_required
 def subject_register(request):
-    """科目登録・管理ページ"""
     student = Student.objects.get(user=request.user)
-    subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
 
     if request.method == "POST":
-        subject_name = request.POST.get("subject_name")
-        subject_class = request.POST.get("subject_class")
-        day_of_week = request.POST.get("day_of_week")
-        table = request.POST.get("table")
-        subject_score = request.POST.get("subject_score", 1)
+        subject_name = request.POST.get("subject_name", "")
+        subject_class = request.POST.get("subject_class", "")
 
-        if not subject_name:
+        # ===== 正規化 =====
+        normalized = unicodedata.normalize('NFKC', subject_name)
+        normalized = normalized.strip()
+        normalized = re.sub(r'\s+', ' ', normalized)
+        normalized = normalized.lower()
+
+        # ===== 科目名 空白対策 =====
+        if not normalized:
             messages.error(request, "科目名を入力してください。")
-        else:
-            Subject.objects.create(
-                student=student,
-                subject_name=subject_name,
-                subject_class=subject_class,
-                day_of_week=day_of_week,
-                table=table,
-                subject_score=subject_score
-            )
-            messages.success(request, f"{subject_name} を登録しました。")
             return redirect("core:subject_register")
 
-    return render(request, "core/subject_register.html", {
-        "subjects": subjects,
-    })
+        # ===== 科目区分 未選択対策 =====
+        if not subject_class:
+            messages.error(request, "科目区分を選択してください。")
+            return redirect("core:subject_register")
+
+        # ===== 事前 重複チェック =====
+        if Subject.objects.filter(student=student, subject_name=normalized).exists():
+            messages.error(request, "この科目はすでに登録されています。")
+            return redirect("core:subject_register")
+
+        # ===== 登録処理（最終防衛：IntegrityError） =====
+        try:
+            Subject.objects.create(
+                student=student,
+                subject_name=normalized,
+                subject_class=subject_class,
+            )
+            messages.success(request, f"「{subject_name}」を登録しました。")
+
+        except IntegrityError:
+            messages.error(
+                request,
+                "この科目はすでに登録されています。別の科目名を入力してください。"
+            )
+
+        return redirect("core:subject_register")
+
+    return render(request, "core/subject_register.html")
 
 def calculate_gpa(student_id):
     # 学生の全ての成績を取得
@@ -481,47 +512,47 @@ def attendance_plan(request):
     student = Student.objects.get(user=request.user)
     subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
 
-    # ✅ 表示用の曜日（「月曜日」「火曜日」など）
     days = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日']
     periods = ['1限目', '2限目', '3限目', '4限目']
 
-    # ✅ 「月」「火」→「月曜日」「火曜日」に変換するマップ
     day_map = {
         '月': '月曜日', '火': '火曜日', '水': '水曜日', '木': '木曜日', '金': '金曜日',
         '月曜日': '月曜日', '火曜日': '火曜日', '水曜日': '水曜日', '木曜日': '木曜日', '金曜日': '金曜日',
     }
 
-    # ✅ 時限→曜日→科目名 形式で初期化
+    # ===== 時間割 =====
     timetable = {}
     for subject in subjects:
-        period = subject.table.strip()         # 例: "1限目"
-        raw_day = subject.day_of_week.strip()  # 例: "木"
-        day = day_map.get(raw_day, raw_day)    # 例: "木" → "木曜日"
+        period = subject.table.strip()
+        raw_day = subject.day_of_week.strip()
+        day = day_map.get(raw_day, raw_day)
 
         if period not in timetable:
             timetable[period] = {}
         timetable[period][day] = subject.subject_name
 
-    # ✅ 出席データの計算
+    # ===== 出席率計算（★修正ポイント） =====
     attendance_data = []
     for subject in subjects:
-        if subject.lesson_count == 0:
-            attendance_rate = 0
+
+        if subject.lesson_count is None:
+            attendance_rate = None
+            status = '授業回数が未登録です'
         else:
             attendance_rate = (subject.attend_days / subject.lesson_count) * 100
 
-        if attendance_rate > 70:
-            status = '現状を維持しましょう'
-        elif attendance_rate == 70:
-            status = '少し危険です'
-        else:
-            status = '警告！出席率が低下しています'
+            if attendance_rate > 70:
+                status = '現状を維持しましょう'
+            elif attendance_rate == 70:
+                status = '少し危険です'
+            else:
+                status = '警告！出席率が低下しています'
 
         attendance_data.append({
             'subject_name': subject.subject_name,
             'lesson_count': subject.lesson_count,
             'attend_days': subject.attend_days,
-            'attendance_rate': round(attendance_rate, 1),
+            'attendance_rate': None if attendance_rate is None else round(attendance_rate, 1),
             'status': status
         })
 
@@ -531,6 +562,7 @@ def attendance_plan(request):
         'days': days,
         'periods': periods
     })
+
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -577,18 +609,28 @@ def attendance_register(request):
 
         subject = get_object_or_404(Subject, pk=subject_id, student=student)
 
-        # 整合性チェック
-        if attend_days > subject.lesson_count:
+        # ③ 授業回数が未登録（None or 0）の場合 → エラー
+        if not subject.lesson_count:
+            messages.error(request, "授業回数が未登録です。先に授業回数を登録してください。")
+
+        # ② 出席回数が授業回数を超える → エラー
+        elif attend_days > subject.lesson_count:
             messages.error(request, "出席回数が授業回数を超えることはできません。")
+
+        # 正常処理
         else:
             subject.attend_days = attend_days
             subject.save()
-            messages.success(request, f"{subject.subject_name} の出席回数を {attend_days} に更新しました。")
+            messages.success(
+                request,
+                f"{subject.subject_name} の出席回数を {attend_days} に更新しました。"
+            )
 
     return render(request, "core/attendance_register.html", {
         "subjects": subjects,
         "attendance_range": attendance_range,
     })
+
 
 # 成績登録
 @login_required
@@ -596,18 +638,17 @@ def attendance_register(request):
 def grade_register(request):
     student = Student.objects.get(user=request.user)
     subjects = Subject.objects.filter(student=student)
-
-    grade_range = range(1, 6)  # 1～5
+    grade_range = range(1, 6)
 
     if request.method == "POST":
         subject_id = request.POST.get("subject_id")
-        subject_score = int(request.POST.get("subject_score"))
+        score = int(request.POST.get("subject_score"))
 
-        subject = get_object_or_404(Subject, pk=subject_id, student=student)
+        subject = get_object_or_404(Subject, subject_id=subject_id, student=student)
 
-        subject.subject_score = subject_score
+        subject.subject_score = score
         subject.save()
-        messages.success(request, f"{subject.subject_name} の成績を {subject_score} に更新しました。")
+        messages.success(request, f"{subject.subject_name} の成績を {score} に更新しました。")
 
     return render(request, "core/grade_register.html", {
         "subjects": subjects,

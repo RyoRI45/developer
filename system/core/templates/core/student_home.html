@@ -17,7 +17,7 @@
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;">ログアウト</button>
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
                 </form>
             </li>
         </ul>
@@ -54,20 +54,75 @@
     <!-- ボタン群 -->
     <div style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
         <form method="GET" action="{% url 'core:manual' %}">
-            <button type="submit" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.1rem;">使い方</button>
+            <button type="submit" class="btn btn-primary"        
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">使い方</button>
         </form>
         <form method="GET" action="{% url 'core:grade_view' %}">
-            <button type="submit" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.1rem;">成績閲覧</button>
+            <button type="submit" class="btn btn-primary"        
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">成績閲覧</button>
         </form>
         <form method="GET" action="{% url 'core:manage_grades' %}">
-            <button type="submit" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.1rem;">成績管理</button>
+            <button type="submit" class="btn btn-primary" 
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">成績管理</button>
         </form>
         <form method="GET" action="{% url 'core:attendance_plan' %}">
-            <button type="submit" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.1rem;">出席計画</button>
+            <button type="submit" class="btn btn-primary" 
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">出席計画</button>
         </form>
         <form method="POST" action="{% url 'core:logout' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger" style="padding: 12px 28px; font-size: 1.1rem;">ログアウト</button>
+            <button type="submit" class="btn btn-danger" 
+            style="
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            ">ログアウト</button>
         </form>
     </div>
 </div>

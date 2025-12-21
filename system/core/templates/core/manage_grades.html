@@ -14,7 +14,7 @@
             <li>
                 <form method="POST" action="{% url 'core:logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;">ログアウト</button>
+                    <button type="submit" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">ログアウト</button>
                 </form>
             </li>
         </ul>
@@ -25,26 +25,117 @@
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 70px 25px; font-size: 1.1rem;">
     <h2 style="text-align: center; font-size: 1.6rem;">成績関連の操作を選択してください</h2>
 
-    <div style="margin-top: 35px; display: flex; flex-direction: column; gap: 20px; width: 280px; font-size: 1.1rem;">
-        <form method="GET" action="{% url 'core:subject_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">科目登録</button>
+    <!-- メニュー全体 -->
+    <div style="
+        margin-top: 35px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 280px;
+        font-size: 1.1rem;
+        margin-left: auto;
+        margin-right: auto;
+    ">
+
+        <!-- 共通ボタンスタイル -->
+        {% comment %} 科目登録 {% endcomment %}
+        <form method="GET" action="{% url 'core:subject_register' %}" style="margin: 0;">
+            <button type="submit"
+                style="
+                    width: 100%;
+                    padding: 12px 0;
+                    font-size: 1.2rem;
+                    background-color: #28a745;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    cursor: pointer;
+                ">
+                科目登録
+            </button>
         </form>
-        <form method="GET" action="{% url 'core:class_count_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">授業回数登録</button>
+
+        {% comment %} 授業回数登録 {% endcomment %}
+        <form method="GET" action="{% url 'core:class_count_register' %}" style="margin: 0;">
+            <button type="submit"
+                style="
+                    width: 100%;
+                    padding: 12px 0;
+                    font-size: 1.2rem;
+                    background-color: #28a745;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    cursor: pointer;
+                ">
+                授業回数登録
+            </button>
         </form>
-        <form method="GET" action="{% url 'core:attendance_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">出席回数登録</button>
+
+        {% comment %} 出席回数登録 {% endcomment %}
+        <form method="GET" action="{% url 'core:attendance_register' %}" style="margin: 0;">
+            <button type="submit"
+                style="
+                    width: 100%;
+                    padding: 12px 0;
+                    font-size: 1.2rem;
+                    background-color: #28a745;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    cursor: pointer;
+                ">
+                出席回数登録
+            </button>
         </form>
-        <form method="GET" action="{% url 'core:grade_register' %}">
-            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 12px 0;">成績登録</button>
+
+        {% comment %} 成績登録 {% endcomment %}
+        <form method="GET" action="{% url 'core:grade_register' %}" style="margin: 0;">
+            <button type="submit"
+                style="
+                    width: 100%;
+                    padding: 12px 0;
+                    font-size: 1.2rem;
+                    background-color: #28a745;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    cursor: pointer;
+                ">
+                成績登録
+            </button>
         </form>
+
     </div>
 
     <!-- 戻るボタン -->
-    <div style="margin-top: 50px;">
-        <form method="GET" action="{% url 'core:student_home' %}">
-            <button type="submit" class="btn btn-secondary" style="font-size: 1.1rem; padding: 10px 25px;">← ホームへ戻る</button>
+    <div style="margin-top: 35px; width: 280px; margin-left: auto; margin-right: auto;">
+        <form method="GET" action="{% url 'core:student_home' %}" style="margin: 0;">
+            <button type="submit"
+                style="
+                    width: 100%;
+                    padding: 12px 0;
+                    font-size: 1.2rem;
+                    background-color: #28a745;
+                    color: white;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    border: 2px solid black;
+                    cursor: pointer;
+                    text-decoration: none;
+                ">
+                ← ホームへ戻る
+            </button>
         </form>
     </div>
+
 </div>
 {% endblock %}
