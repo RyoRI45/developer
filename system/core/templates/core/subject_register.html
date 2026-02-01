@@ -1,16 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 {% if messages %}
-<div style="width:90%;max-width:800px;margin-top:20px;">
+<div style="text-align:center; margin-top:20px;">
     {% for message in messages %}
         <div style="
-            padding: 15px;
+            display:inline-block;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 10px;
             {% if message.tags == 'success' %}
                 background-color: #d4edda; color: #155724;
             {% elif message.tags == 'error' %}
                 background-color: #f8d7da; color: #721c24;
+            {% elif message.tags == 'warning' %}
+                background-color: #fff3cd; color: #856404;
             {% else %}
                 background-color: #cce5ff; color: #004085;
             {% endif %}
@@ -20,6 +23,7 @@
     {% endfor %}
 </div>
 {% endif %}
+
 
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background-color: #28a745; color: white; font-size:1.2rem;">
     <h1 style="margin: 0; font-size: 1.8rem;">学習管理システム</h1>

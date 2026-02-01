@@ -346,49 +346,61 @@ def manage_grades(request):
 def subject_register(request):
     student = Student.objects.get(user=request.user)
 
+
     if request.method == "POST":
         subject_name = request.POST.get("subject_name", "")
         subject_class = request.POST.get("subject_class", "")
+        day_of_week = request.POST.get("day_of_week")
+        table = request.POST.get("table")
+        subject_score = request.POST.get("subject_score")
 
-        # ===== 正規化 =====
-        normalized = unicodedata.normalize('NFKC', subject_name)
-        normalized = normalized.strip()
-        normalized = re.sub(r'\s+', ' ', normalized)
-        normalized = normalized.lower()
 
-        # ===== 科目名 空白対策 =====
+        # 正規化
+        normalized = unicodedata.normalize('NFKC', subject_name).strip()
+        normalized = re.sub(r'\s+', ' ', normalized).lower()
+
+
         if not normalized:
             messages.error(request, "科目名を入力してください。")
             return redirect("core:subject_register")
 
-        # ===== 科目区分 未選択対策 =====
-        if not subject_class:
-            messages.error(request, "科目区分を選択してください。")
+
+        # 同一曜日＋時限の重複チェック（指摘事項②対応）
+        if Subject.objects.filter(
+            student=student,
+            day_of_week=day_of_week,
+            table=table
+        ).exists():
+            messages.error(request, "同じ曜日・時限の科目は登録できません。")
             return redirect("core:subject_register")
 
-        # ===== 事前 重複チェック =====
-        if Subject.objects.filter(student=student, subject_name=normalized).exists():
-            messages.error(request, "この科目はすでに登録されています。")
-            return redirect("core:subject_register")
 
-        # ===== 登録処理（最終防衛：IntegrityError） =====
         try:
             Subject.objects.create(
                 student=student,
                 subject_name=normalized,
                 subject_class=subject_class,
+                subject_score=subject_score,
+                day_of_week=day_of_week,
+                table=table,
             )
             messages.success(request, f"「{subject_name}」を登録しました。")
 
+
         except IntegrityError:
-            messages.error(
-                request,
-                "この科目はすでに登録されています。別の科目名を入力してください。"
-            )
+            messages.error(request, "この科目はすでに登録されています。")
+
 
         return redirect("core:subject_register")
 
-    return render(request, "core/subject_register.html")
+
+    # ★★ ここが超重要 ★★
+    subjects = Subject.objects.filter(student=student).order_by("day_of_week", "table")
+
+
+    return render(request, "core/subject_register.html", {
+        "subjects": subjects,
+    })
 
 def calculate_gpa(student_id):
     # 学生の全ての成績を取得
@@ -508,6 +520,7 @@ def grade_view(request):
 #                    'timetable': timetable, 'days': days, 
 #                    'periods': periods})
 
+
 def attendance_plan(request):
     student = Student.objects.get(user=request.user)
     subjects = Subject.objects.filter(student=student).order_by('day_of_week', 'table')
@@ -516,8 +529,11 @@ def attendance_plan(request):
     periods = ['1限目', '2限目', '3限目', '4限目']
 
     day_map = {
-        '月': '月曜日', '火': '火曜日', '水': '水曜日', '木': '木曜日', '金': '金曜日',
-        '月曜日': '月曜日', '火曜日': '火曜日', '水曜日': '水曜日', '木曜日': '木曜日', '金曜日': '金曜日',
+        '月': '月曜日', '火': '火曜日', '水': '水曜日',
+        '木': '木曜日', '金': '金曜日',
+        '月曜日': '月曜日', '火曜日': '火曜日',
+        '水曜日': '水曜日', '木曜日': '木曜日',
+        '金曜日': '金曜日',
     }
 
     # ===== 時間割 =====
@@ -531,36 +547,51 @@ def attendance_plan(request):
             timetable[period] = {}
         timetable[period][day] = subject.subject_name
 
-    # ===== 出席率計算（★修正ポイント） =====
+    # ===== 出席率計算 =====
     attendance_data = []
+    warning_required_subject = False  # 必修警告フラグ
+
     for subject in subjects:
+        lesson_count = subject.lesson_count or 0
+        attend_days = subject.attend_days or 0
 
-        if subject.lesson_count is None:
-            attendance_rate = None
-            status = '授業回数が未登録です'
+        if lesson_count > 0:
+            attendance_rate = (attend_days / lesson_count) * 100
         else:
-            attendance_rate = (subject.attend_days / subject.lesson_count) * 100
+            attendance_rate = 0
 
-            if attendance_rate > 70:
-                status = '現状を維持しましょう'
-            elif attendance_rate == 70:
-                status = '少し危険です'
+        # ===== 状況判定 =====
+        if attendance_rate < 70:
+            if subject.subject_class == "必修":
+                status = "警告！出席率が低下しています"
+                status_class = "status-danger"   # ← 赤表示は必修のみ
+                warning_required_subject = True
             else:
-                status = '警告！出席率が低下しています'
+                status = "出席率がやや低下しています。注意しましょう"
+                status_class = "status-warning"  # ← 赤にしない
+
+        elif attendance_rate < 80:
+            status = "少し注意が必要です"
+            status_class = "status-warning"
+
+        else:
+            status = "現状を維持しましょう"
+            status_class = "status-safe"
 
         attendance_data.append({
             'subject_name': subject.subject_name,
-            'lesson_count': subject.lesson_count,
-            'attend_days': subject.attend_days,
-            'attendance_rate': None if attendance_rate is None else round(attendance_rate, 1),
-            'status': status
+            'lesson_count': lesson_count,
+            'attend_days': attend_days,
+            'attendance_rate': round(attendance_rate, 1),
+            'status': status,
+            'status_class': status_class,
         })
 
     return render(request, 'core/attendance_plan.html', {
         'attendance_data': attendance_data,
         'timetable': timetable,
         'days': days,
-        'periods': periods
+        'periods': periods,
     })
 
 
