@@ -6,6 +6,7 @@ from .models import Student, Subject, GPA
 from django.http import HttpResponseForbidden
 from core.models import Student  # Student モデルのインポート
 from django.conf import settings
+from django.utils import timezone
 import uuid
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
@@ -300,7 +301,7 @@ def student_home(request):
     student = Student.objects.get(user=request.user)
 
     # 今日の曜日(英語 → 日本語1文字に変換)
-    weekday_eng = datetime.now().strftime('%a')  # Mon, Tue, Wed...
+    weekday_eng = timezone.localtime(timezone.now()).strftime('%a')  # Mon, Tue, Wed...
     weekday_map = {
         'Mon': '月',
         'Tue': '火',
