@@ -34,7 +34,7 @@ class Subject(models.Model):
     subject_name = models.CharField(max_length=50)
     subject_class = models.CharField(max_length=10, choices=SUBJECT_CLASS_CHOICES)
 
-    subject_score = models.IntegerField(default=1)
+    subject_score = models.IntegerField(null=True, blank=True)
     attend_days = models.IntegerField(default=0)
     lesson_count = models.IntegerField(null=True, blank=True)
 

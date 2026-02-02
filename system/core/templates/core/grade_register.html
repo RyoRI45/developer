@@ -94,7 +94,13 @@
                 {% for subject in subjects %}
                     <tr>
                         <td style="border:1px solid #ddd;padding:12px;">{{ subject.subject_name }}</td>
-                        <td style="border:1px solid #ddd;padding:12px;">{{ subject.subject_score }}</td>
+                        <td style="border:1px solid #ddd;padding:12px;">
+                            {% if subject.subject_score %}
+                                {{ subject.subject_score }}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="2" style="padding:12px;">登録されていません。</td></tr>
