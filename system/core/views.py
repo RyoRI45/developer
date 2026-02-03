@@ -297,30 +297,31 @@ def get_today():
 
 @login_required
 def student_home(request):
-    # 学生情報取得
     student = Student.objects.get(user=request.user)
 
-    # 今日の曜日(英語 → 日本語1文字に変換)
-    weekday_eng = timezone.localtime(timezone.now()).strftime('%a')  # Mon, Tue, Wed...
+    weekday_num = timezone.localtime().weekday()  # 0=月, 1=火 ...
     weekday_map = {
-        'Mon': '月',
-        'Tue': '火',
-        'Wed': '水',
-        'Thu': '木',
-        'Fri': '金',
-        'Sat': '土',
-        'Sun': '日',
+        0: '月',
+        1: '火',
+        2: '水',
+        3: '木',
+        4: '金',
+        5: '土',
+        6: '日',
     }
-    today_jp = weekday_map.get(weekday_eng)
+    today_jp = weekday_map[weekday_num]
 
-    # 今日の科目を取得
-    subjects_today = Subject.objects.filter(student=student, day_of_week=today_jp)
+    subjects_today = Subject.objects.filter(
+        student=student,
+        day_of_week=today_jp
+    )
 
     return render(request, "core/student_home.html", {
         "student": student,
         "today": today_jp,
         "today_subjects": subjects_today,
     })
+
 
 def manage_grades(request):
     host = request.get_host()  # ホスト名を取得
